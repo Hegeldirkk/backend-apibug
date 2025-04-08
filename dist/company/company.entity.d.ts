@@ -1,0 +1,36 @@
+import { User } from '../user/user.entity';
+export declare class Company {
+    id: string;
+    nom?: string;
+    description?: string;
+    type_entreprise?: string;
+    email_company?: string;
+    language?: string;
+    secteur?: string;
+    statut_actuel?: string;
+    verified: boolean;
+    responsable_nom_complet: string;
+    responsable_contact?: string;
+    fix?: string;
+    email: string;
+    adresse?: string;
+    urlSite?: string;
+    num_identification?: string;
+    user: User;
+    pushToken?: string;
+    registre_commerce?: string;
+    date_creation?: Date;
+    longitude?: string;
+    latitude?: string;
+    pays?: string;
+    reseaux_sociaux?: string[];
+    horaires_ouverture?: string;
+    langues?: string[];
+    modes_paiement?: string[];
+    services?: string[];
+    responsable?: string;
+    logo?: string;
+    documents?: string[];
+    createdAt: Date;
+    updatedAt: Date;
+}
