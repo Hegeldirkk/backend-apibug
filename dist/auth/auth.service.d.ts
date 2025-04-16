@@ -23,6 +23,9 @@ export declare class AuthService {
             id: string;
             email: string;
             verified: boolean;
+            statut: import("../user/user.entity").StatutCompte;
+            role: UserRole;
+            docSet: boolean;
         };
     }>;
     login(dto: LoginDto): Promise<{

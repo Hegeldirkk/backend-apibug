@@ -14,6 +14,9 @@ export declare class AuthController {
             id: string;
             email: string;
             verified: boolean;
+            statut: import("src/user/user.entity").StatutCompte;
+            role: UserRole;
+            docSet: boolean;
         };
     }>;
     registerCompany(dto: RegisterDto): Promise<{
@@ -23,6 +26,9 @@ export declare class AuthController {
             id: string;
             email: string;
             verified: boolean;
+            statut: import("src/user/user.entity").StatutCompte;
+            role: UserRole;
+            docSet: boolean;
         };
     }>;
     registerAdmin(dto: RegisterDto): Promise<{
@@ -32,6 +38,9 @@ export declare class AuthController {
             id: string;
             email: string;
             verified: boolean;
+            statut: import("src/user/user.entity").StatutCompte;
+            role: UserRole;
+            docSet: boolean;
         };
     }>;
     login(dto: LoginDto): Promise<{

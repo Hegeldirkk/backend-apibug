@@ -1,9 +1,25 @@
-import { Controller, Request, Post, Body, Get, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  Res,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 
@@ -19,30 +35,21 @@ export class CompanyController {
   @UseGuards(JwtAuthGuard)
   @Patch('update')
   @UseInterceptors(
-    FilesInterceptor('files', 2, {
-      storage: diskStorage({
-        destination: './uploads/companies',
-        filename: (req, file, cb) => {
-          const uniqueName = `${Date.now()}-${Math.round(
-            Math.random() * 1e9,
-          )}${extname(file.originalname)}`;
-          cb(null, uniqueName);
-        },
-      }),
-    }),
+    FileFieldsInterceptor([
+      { name: 'registre_commerce', maxCount: 1 },
+      { name: 'logo', maxCount: 1 },
+    ]),
   )
   async updateCompany(
     @Request() req,
     @Body() dto: UpdateCompanyDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles()
+    files: {
+      registre_commerce?: Express.Multer.File[];
+      logo?: Express.Multer.File[];
+    },
   ) {
-    const fileMap = {};
-    files.forEach((file) => {
-      if (file.originalname.includes('logo')) fileMap['logo'] = file.path;
-      if (file.originalname.includes('registre')) fileMap['registre_commerce'] = file.path;
-    });
-
-    return this.companyService.updateCompanyInfo(req.user.id, dto, fileMap);
+    return this.companyService.updateCompanyInfo(req, dto, files);
   }
 
   @Get()

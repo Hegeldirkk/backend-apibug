@@ -19,8 +19,6 @@ const create_company_dto_1 = require("./dto/create-company.dto");
 const update_company_dto_1 = require("./dto/update-company.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
-const path_1 = require("path");
-const multer_1 = require("multer");
 let CompanyController = class CompanyController {
     companyService;
     constructor(companyService) {
@@ -30,14 +28,7 @@ let CompanyController = class CompanyController {
         return this.companyService.create(dto);
     }
     async updateCompany(req, dto, files) {
-        const fileMap = {};
-        files.forEach((file) => {
-            if (file.originalname.includes('logo'))
-                fileMap['logo'] = file.path;
-            if (file.originalname.includes('registre'))
-                fileMap['registre_commerce'] = file.path;
-        });
-        return this.companyService.updateCompanyInfo(req.user.id, dto, fileMap);
+        return this.companyService.updateCompanyInfo(req, dto, files);
     }
     findAll() {
         return this.companyService.findAll();
@@ -63,20 +54,15 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)('update'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 2, {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/companies',
-            filename: (req, file, cb) => {
-                const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
-                cb(null, uniqueName);
-            },
-        }),
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'registre_commerce', maxCount: 1 },
+        { name: 'logo', maxCount: 1 },
+    ])),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_company_dto_1.UpdateCompanyDto, Array]),
+    __metadata("design:paramtypes", [Object, update_company_dto_1.UpdateCompanyDto, Object]),
     __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "updateCompany", null);
 __decorate([

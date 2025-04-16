@@ -23,14 +23,10 @@ class UpdateCompanyDto {
     responsable_contact;
     fix;
     adresse;
-    urlSite;
     num_identification;
     registre_commerce;
     date_creation;
     pays;
-    reseaux_sociaux;
-    horaires_ouverture;
-    modes_paiement;
     logo;
 }
 exports.UpdateCompanyDto = UpdateCompanyDto;
@@ -79,7 +75,6 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "responsable_contact", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "fix", void 0);
@@ -88,20 +83,15 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "adresse", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], UpdateCompanyDto.prototype, "urlSite", void 0);
-__decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "num_identification", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "registre_commerce", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", Date)
 ], UpdateCompanyDto.prototype, "date_creation", void 0);
 __decorate([
@@ -111,21 +101,6 @@ __decorate([
 ], UpdateCompanyDto.prototype, "pays", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], UpdateCompanyDto.prototype, "reseaux_sociaux", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], UpdateCompanyDto.prototype, "horaires_ouverture", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], UpdateCompanyDto.prototype, "modes_paiement", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateCompanyDto.prototype, "logo", void 0);
 //# sourceMappingURL=update-company.dto.js.map

@@ -32,9 +32,9 @@ let User = class User {
     numeroTelephone;
     password;
     otp_code;
-    token_register;
     otp_expire_at;
     verified;
+    docSet;
     role;
     emailRecuperation;
     emailChangePending;
@@ -73,16 +73,16 @@ __decorate([
 ], User.prototype, "otp_code", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "token_register", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)
 ], User.prototype, "otp_expire_at", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "verified", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "docSet", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -122,7 +122,7 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: StatutCompte,
-        default: StatutCompte.ACTIF,
+        default: StatutCompte.PENDING,
     }),
     __metadata("design:type", String)
 ], User.prototype, "statutCompte", void 0);

@@ -10,13 +10,9 @@ export declare class UpdateCompanyDto {
     responsable_contact?: string;
     fix?: string;
     adresse?: string;
-    urlSite?: string;
     num_identification?: string;
     registre_commerce?: string;
     date_creation?: Date;
     pays?: string;
-    reseaux_sociaux?: string[];
-    horaires_ouverture?: string;
-    modes_paiement?: string[];
     logo?: string;
 }

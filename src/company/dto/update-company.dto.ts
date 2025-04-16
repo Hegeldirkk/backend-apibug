@@ -38,24 +38,19 @@ export class UpdateCompanyDto {
     @IsString()
     responsable_contact?: string;
 
-    @IsOptional()
     @IsString()
     fix?: string;
 
     @IsString()
     adresse?: string;
 
-    @IsOptional()
-    @IsString()
-    urlSite?: string;
-
     @IsString()
     num_identification?: string;
 
-    @IsString()
+    @IsOptional()
     registre_commerce?: string;
 
-    @IsDateString()
+    @IsString()
     date_creation?: Date;
 
     @IsOptional()
@@ -63,18 +58,6 @@ export class UpdateCompanyDto {
     pays?: string;
 
     @IsOptional()
-    @IsArray()
-    reseaux_sociaux?: string[];
-
-    @IsOptional()
-    @IsString()
-    horaires_ouverture?: string;
-
-    @IsOptional()
-    @IsArray()
-    modes_paiement?: string[];
-
-    @IsString()
     logo?: string;
 
 }

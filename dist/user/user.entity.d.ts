@@ -17,9 +17,9 @@ export declare class User {
     numeroTelephone: string;
     password: string;
     otp_code: string;
-    token_register: string;
     otp_expire_at: Date;
     verified: boolean;
+    docSet: boolean;
     role: UserRole;
     emailRecuperation?: string;
     emailChangePending?: string;

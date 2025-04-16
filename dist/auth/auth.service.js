@@ -40,9 +40,14 @@ let AuthService = class AuthService {
         this.confirmationTokenService = confirmationTokenService;
     }
     async register(dto, role) {
-        const existing = await this.userRepo.findOne({ where: { email: dto.email } });
+        const existing = await this.userRepo.findOne({
+            where: { email: dto.email },
+        });
         if (existing) {
-            throw new common_1.BadRequestException({ success: false, message: 'Email déjà utilisé' });
+            throw new common_1.BadRequestException({
+                success: false,
+                message: 'Email déjà utilisé',
+            });
         }
         const hashed = await bcrypt.hash(dto.password, 10);
         const user = this.userRepo.create({
@@ -66,14 +71,20 @@ let AuthService = class AuthService {
             data: {
                 id: user.id,
                 email: user.email,
-                verified: user.verified
-            }
+                verified: user.verified,
+                statut: user.statutCompte,
+                role: user.role,
+                docSet: user.docSet,
+            },
         };
     }
     async login(dto) {
         const user = await this.userRepo.findOne({ where: { email: dto.email } });
         if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-            throw new common_1.UnauthorizedException({ success: false, message: 'Identifiants invalides' });
+            throw new common_1.UnauthorizedException({
+                success: false,
+                message: 'Identifiants invalides',
+            });
         }
         const payload = {
             id: user.id,
@@ -91,7 +102,7 @@ let AuthService = class AuthService {
                     email: user.email,
                     role: user.role,
                 },
-            }
+            },
         };
     }
     async verifyAccount(token) {
@@ -101,17 +112,22 @@ let AuthService = class AuthService {
                 secret: this.configService.get('JWT_SECRET'),
             });
             console.log(`Token vérifié pour l'utilisateur avec l'ID : ${decoded.userId}`);
-            const user = await this.userRepo.findOne({ where: { id: decoded.userId } });
+            const user = await this.userRepo.findOne({
+                where: { id: decoded.userId },
+            });
             if (!user) {
                 console.log('Utilisateur non trouvé');
-                throw new common_1.BadRequestException({ success: false, message: 'Utilisateur non trouvé' });
+                throw new common_1.BadRequestException({
+                    success: false,
+                    message: 'Utilisateur non trouvé',
+                });
             }
             console.log(`Utilisateur trouvé : ${user.email}`);
             if (user.verified) {
                 console.log('Le compte a déjà été confirmé');
                 throw new common_1.BadRequestException({
                     success: false,
-                    message: 'Le compte a déjà été confirmé'
+                    message: 'Le compte a déjà été confirmé',
                 });
             }
             user.verified = true;
@@ -127,7 +143,7 @@ let AuthService = class AuthService {
                         email: user.email,
                         role: user.role,
                     },
-                }
+                },
             };
         }
         catch (error) {

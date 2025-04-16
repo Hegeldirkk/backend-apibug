@@ -9,8 +9,8 @@ import { UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private configService: ConfigService,
     private userService: UserService, // Injection du service pour récupérer les utilisateurs
+    private configService: ConfigService, // Injection du service de configuration pour récupérer la clé secrète
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

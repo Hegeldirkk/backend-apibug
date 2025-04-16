@@ -39,13 +39,13 @@ import {
     otp_code: string;
 
     @Column({ nullable: true })
-    token_register: string;
-
-    @Column({ nullable: true })
     otp_expire_at: Date;
   
     @Column({ default: false })
     verified: boolean;
+
+    @Column({ default: false })
+    docSet: boolean;
   
     @Column({
       type: 'enum',
@@ -79,7 +79,7 @@ import {
     @Column({
       type: 'enum',
       enum: StatutCompte,
-      default: StatutCompte.ACTIF,
+      default: StatutCompte.PENDING,
     })
     statutCompte: StatutCompte;
   

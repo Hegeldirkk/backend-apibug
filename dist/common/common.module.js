@@ -15,15 +15,25 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../user/user.entity");
 const confirmation_token_service_1 = require("./confirmation-token.service");
 const jwt_1 = require("@nestjs/jwt");
+const file_upload_service_1 = require("./file-upload/file-upload.service");
 let CommonModule = class CommonModule {
 };
 exports.CommonModule = CommonModule;
 exports.CommonModule = CommonModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
-            config_1.ConfigModule, jwt_1.JwtModule],
-        providers: [send_email_service_1.SendEmailService, send_sms_service_1.SendSmsService, confirmation_token_service_1.ConfirmationTokenService],
-        exports: [send_email_service_1.SendEmailService, send_sms_service_1.SendSmsService, confirmation_token_service_1.ConfirmationTokenService],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]), config_1.ConfigModule, jwt_1.JwtModule],
+        providers: [
+            send_email_service_1.SendEmailService,
+            send_sms_service_1.SendSmsService,
+            confirmation_token_service_1.ConfirmationTokenService,
+            file_upload_service_1.FileUploadService,
+        ],
+        exports: [
+            send_email_service_1.SendEmailService,
+            send_sms_service_1.SendSmsService,
+            confirmation_token_service_1.ConfirmationTokenService,
+            file_upload_service_1.FileUploadService,
+        ],
     })
 ], CommonModule);
 //# sourceMappingURL=common.module.js.map

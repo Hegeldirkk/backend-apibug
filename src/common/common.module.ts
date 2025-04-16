@@ -8,11 +8,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { ConfirmationTokenService } from './confirmation-token.service';
 import { JwtModule } from '@nestjs/jwt';
+import { FileUploadService } from './file-upload/file-upload.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),
-  ConfigModule, JwtModule], // Importation du module de configuration pour accéder au fichier .env
-  providers: [SendEmailService, SendSmsService, ConfirmationTokenService],
-  exports: [SendEmailService, SendSmsService, ConfirmationTokenService], // Exporte le service pour pouvoir l'utiliser ailleurs
+  imports: [TypeOrmModule.forFeature([User]), ConfigModule, JwtModule], // Importation du module de configuration pour accéder au fichier .env
+  providers: [
+    SendEmailService,
+    SendSmsService,
+    ConfirmationTokenService,
+    FileUploadService,
+  ],
+  exports: [
+    SendEmailService,
+    SendSmsService,
+    ConfirmationTokenService,
+    FileUploadService,
+  ], // Exporte le service pour pouvoir l'utiliser ailleurs
 })
 export class CommonModule {}
