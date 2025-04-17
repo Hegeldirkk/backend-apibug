@@ -17,6 +17,7 @@ const user_entity_1 = require("./user/user.entity");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const config_1 = require("@nestjs/config");
+const hacker_entity_1 = require("./hacker/hacker.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,7 +35,7 @@ exports.AppModule = AppModule = __decorate([
                 username: 'root',
                 password: '',
                 database: 'bugproject',
-                entities: [user_entity_1.User, company_entity_1.Company],
+                entities: [user_entity_1.User, company_entity_1.Company, hacker_entity_1.Hacker],
                 synchronize: true,
             }),
             auth_module_1.AuthModule,

@@ -10,11 +10,11 @@ import { Repository } from 'typeorm';
 import { Company } from './company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { FileUploadService } from 'src/common/file-upload/file-upload.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { url } from 'inspector';
+import { User } from 'src/user/user.entity';
 
 interface FileValidationResult {
   isValid: boolean;
@@ -143,25 +143,92 @@ export class CompanyService {
     }
   }
 
-  create(data: CreateCompanyDto) {
-    const company = this.companyRepo.create(data);
-    return this.companyRepo.save(company);
+  // create(data: CreateCompanyDto) {
+  //   const company = this.companyRepo.create(data);
+  //   return this.companyRepo.save(company);
+  // }
+
+  // findAll() {
+  //   return this.companyRepo.find();
+  // }
+
+  // async findOne(id: string) {
+  //   const company = await this.companyRepo.findOne({ where: { id } });
+  //   if (!company) throw new NotFoundException('Société non trouvée');
+  //   return company;
+  // }
+
+  // async update(id: string, data: UpdateCompanyDto) {
+  //   await this.findOne(id); // Vérifie que la company existe
+  //   await this.companyRepo.update(id, data);
+  //   return this.findOne(id);
+  // }
+
+  async getCompanyProfile(user: User) {
+    const company = await this.companyRepo.findOne({
+      where: { user: { id: user.id } },
+      relations: ['user'],
+    });
+
+    if (!company) throw new NotFoundException('Entreprise introuvable');
+
+    return {
+      success: true,
+      message: 'Profil récupéré avec succès',
+      data: {
+        id: company.id,
+        role: company.user.role,
+        statut: company.user.statutCompte,
+        verified: company.user.verified,
+        email: company.user.email,
+        nom: company.nom,
+        description: company.description,
+        type_entreprise: company.type_entreprise,
+        email_company: company.email_company,
+        language: company.language,
+        secteur: company.secteur,
+        statut_actuel: company.statut_actuel,
+        responsable_nom_complet: company.responsable_nom_complet,
+        responsable_contact: company.responsable_contact,
+        fix: company.fix,
+        adresse: company.adresse,
+        urlSite: company.urlSite,
+        num_identification: company.num_identification,
+        registre_commerce: company.registre_commerce,
+        date_creation: company.date_creation,
+        pays: company.pays,
+        longitude: company.longitude,
+        latitude: company.latitude,
+        reseaux_sociaux: company.reseaux_sociaux,
+        horaires_ouverture: company.horaires_ouverture,
+        langues: company.langues,
+        modes_paiement: company.modes_paiement,
+        services: company.services,
+        responsable: company.responsable,
+        logo: company.logo,
+        documents: company.documents,
+        createdAt: company.createdAt,
+        updatedAt: company.updatedAt,
+      },
+    };
   }
 
-  findAll() {
-    return this.companyRepo.find();
-  }
+  async updateCompanyProfile(user: User, data: Partial<Company>) {
+    const company = await this.companyRepo.findOne({
+      where: { user: { id: user.id } },
+    });
 
-  async findOne(id: string) {
-    const company = await this.companyRepo.findOne({ where: { id } });
-    if (!company) throw new NotFoundException('Société non trouvée');
-    return company;
-  }
+    if (!company) throw new NotFoundException('Entreprise introuvable');
 
-  async update(id: string, data: UpdateCompanyDto) {
-    await this.findOne(id); // Vérifie que la company existe
-    await this.companyRepo.update(id, data);
-    return this.findOne(id);
+    Object.assign(company, data);
+
+    const updated = await this.companyRepo.save(company);
+
+    return {
+      success: true,
+      message: 'Profil mis à jour avec succès',
+      data: updated,
+    };
   }
 
   async updateCompanyInfo(
@@ -230,44 +297,37 @@ export class CompanyService {
       if (dto.num_identification)
         company.num_identification = dto.num_identification;
       if (dto.date_creation) company.date_creation = dto.date_creation;
-      if (dto.pays) company.pays = dto.pays;
       company.user.docSet = true; // Mettre à jour le statut du document de l'utilisateur
 
       await this.companyRepo.save(company);
 
       return {
-        error: false,
+        success: true,
         message: 'Entreprise mise à jour avec succès',
         data: {
-          company: {
-            id: company.id,
-            nom: company.nom,
-            description: company.description,
-            type_entreprise: company.type_entreprise,
-            email_company: company.email_company,
-            language: company.language,
-            secteur: company.secteur,
-            statut_actuel: company.statut_actuel,
-            verfied: company.verified,
-            registre_commerce: company.registre_commerce,
-            logo: company.logo,
-            responsable_nom_complet: company.responsable_nom_complet,
-            responsable_contact: company.responsable_contact,
-            fix: company.fix,
-            email: company.email,
-            adresse: company.adresse,
-            urlSite: company.urlSite,
-            num_identification: company.num_identification,
-          },
-          user: {
-            id: company.user.id,
-            email: company.user.email,
-            numeroTelephone: company.user.numeroTelephone,
-            role: company.user.role,
-            statutCompte: company.user.statutCompte,
-            verified: company.user.verified,
-            docSet: company.user.docSet,
-          },
+          id: company.user.id,
+          email: company.user.email,
+          numeroTelephone: company.user.numeroTelephone,
+          role: company.user.role,
+          statutCompte: company.user.statutCompte,
+          verified: company.user.verified,
+          docSet: company.user.docSet,
+          nom: company.nom,
+          description: company.description,
+          type_entreprise: company.type_entreprise,
+          email_company: company.email_company,
+          language: company.language,
+          secteur: company.secteur,
+          statut_actuel: company.statut_actuel,
+          verfied: company.verified,
+          registre_commerce: company.registre_commerce,
+          logo: company.logo,
+          responsable_nom_complet: company.responsable_nom_complet,
+          responsable_contact: company.responsable_contact,
+          fix: company.fix,
+          adresse: company.adresse,
+          urlSite: company.urlSite,
+          num_identification: company.num_identification,
         },
       };
     } catch (error) {
@@ -283,10 +343,10 @@ export class CompanyService {
     }
   }
 
-  async remove(id: string) {
-    const company = await this.findOne(id);
-    return this.companyRepo.remove(company);
-  }
+  // async remove(id: string) {
+  //   const company = await this.findOne(id);
+  //   return this.companyRepo.remove(company);
+  // }
 
   // Méthode pour enregistrer les fichiers dans un répertoire
   private async saveFiles(

@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.StatutCompte = exports.UserRole = void 0;
+const company_entity_1 = require("../company/company.entity");
 const typeorm_1 = require("typeorm");
 var UserRole;
 (function (UserRole) {
@@ -49,6 +50,7 @@ let User = class User {
     verificationSentAt;
     createdAt;
     updatedAt;
+    company;
 };
 exports.User = User;
 __decorate([
@@ -146,6 +148,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => company_entity_1.Company, (company) => company.user),
+    __metadata("design:type", company_entity_1.Company)
+], User.prototype, "company", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('users')
 ], User);

@@ -3,44 +3,35 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserRole } from 'src/user/user.entity';
 import { ChangePasswordDto } from './dto/update-password.dto';
-import { Response } from 'express';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    registerHacker(dto: RegisterDto, res: Response): Promise<{
+    registerHacker(dto: RegisterDto): Promise<{
         success: boolean;
         message: string;
         data: {
-            id: string;
-            email: string;
-            verified: boolean;
-            statut: import("src/user/user.entity").StatutCompte;
-            role: UserRole;
-            docSet: boolean;
+            user: {
+                id: string;
+                email: string;
+                verified: boolean;
+                statut: import("src/user/user.entity").StatutCompte;
+                role: UserRole;
+                docSet: boolean;
+            };
         };
     }>;
     registerCompany(dto: RegisterDto): Promise<{
         success: boolean;
         message: string;
         data: {
-            id: string;
-            email: string;
-            verified: boolean;
-            statut: import("src/user/user.entity").StatutCompte;
-            role: UserRole;
-            docSet: boolean;
-        };
-    }>;
-    registerAdmin(dto: RegisterDto): Promise<{
-        success: boolean;
-        message: string;
-        data: {
-            id: string;
-            email: string;
-            verified: boolean;
-            statut: import("src/user/user.entity").StatutCompte;
-            role: UserRole;
-            docSet: boolean;
+            user: {
+                id: string;
+                email: string;
+                verified: boolean;
+                statut: import("src/user/user.entity").StatutCompte;
+                role: UserRole;
+                docSet: boolean;
+            };
         };
     }>;
     login(dto: LoginDto): Promise<{
@@ -52,6 +43,9 @@ export declare class AuthController {
                 id: string;
                 email: string;
                 role: UserRole;
+                statut: import("src/user/user.entity").StatutCompte;
+                docSet: boolean;
+                verified: boolean;
             };
         };
     }>;
@@ -64,10 +58,14 @@ export declare class AuthController {
                 id: string;
                 email: string;
                 role: UserRole;
+                statut: import("src/user/user.entity").StatutCompte;
+                docSet: boolean;
+                verified: boolean;
             };
         };
     }>;
     changePassword(req: any, dto: ChangePasswordDto): Promise<{
+        success: boolean;
         message: string;
     }>;
 }

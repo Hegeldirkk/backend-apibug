@@ -8,6 +8,7 @@ import { User } from './user/user.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
+import { Hacker } from './hacker/hacker.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { ConfigModule } from '@nestjs/config';
       username: 'root',
       password: '',
       database: 'bugproject',
-      entities: [User, Company],
+      entities: [User, Company, Hacker],
       synchronize: true, // ❗ À désactiver en prod
     }),
     AuthModule,

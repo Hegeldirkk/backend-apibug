@@ -15,42 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyController = void 0;
 const common_1 = require("@nestjs/common");
 const company_service_1 = require("./company.service");
-const create_company_dto_1 = require("./dto/create-company.dto");
 const update_company_dto_1 = require("./dto/update-company.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
+const update_company_profile_dto_1 = require("./dto/update-company-profile.dto");
 let CompanyController = class CompanyController {
     companyService;
     constructor(companyService) {
         this.companyService = companyService;
     }
-    create(dto) {
-        return this.companyService.create(dto);
-    }
     async updateCompany(req, dto, files) {
         return this.companyService.updateCompanyInfo(req, dto, files);
     }
-    findAll() {
-        return this.companyService.findAll();
+    async getProfile(req) {
+        return this.companyService.getCompanyProfile(req.user);
     }
-    findOne(id) {
-        return this.companyService.findOne(id);
-    }
-    update(id, dto) {
-        return this.companyService.update(id, dto);
-    }
-    remove(id) {
-        return this.companyService.remove(id);
+    async updateProfile(req, body) {
+        return this.companyService.updateCompanyProfile(req.user, body);
     }
 };
 exports.CompanyController = CompanyController;
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_company_dto_1.CreateCompanyDto]),
-    __metadata("design:returntype", void 0)
-], CompanyController.prototype, "create", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)('update'),
@@ -66,33 +50,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "updateCompany", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('profile'),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], CompanyController.prototype, "findAll", null);
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CompanyController.prototype, "getProfile", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CompanyController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Put)('profile'),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_company_dto_1.UpdateCompanyDto]),
-    __metadata("design:returntype", void 0)
-], CompanyController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CompanyController.prototype, "remove", null);
+    __metadata("design:paramtypes", [Object, update_company_profile_dto_1.UpdateProfileDto]),
+    __metadata("design:returntype", Promise)
+], CompanyController.prototype, "updateProfile", null);
 exports.CompanyController = CompanyController = __decorate([
     (0, common_1.Controller)('companies'),
     __metadata("design:paramtypes", [company_service_1.CompanyService])

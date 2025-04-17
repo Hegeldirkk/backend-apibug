@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
-const user_entity_1 = require("../user/user.entity");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 const update_password_dto_1 = require("./dto/update-password.dto");
 let AuthController = class AuthController {
@@ -25,17 +24,11 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async registerHacker(dto, res) {
-        const role = user_entity_1.UserRole.HACKER;
-        return this.authService.register(dto, role);
+    async registerHacker(dto) {
+        return this.authService.registerHacker(dto);
     }
     async registerCompany(dto) {
-        const role = user_entity_1.UserRole.ENTREPRISE;
-        return this.authService.register(dto, role);
-    }
-    async registerAdmin(dto) {
-        const role = user_entity_1.UserRole.ADMIN;
-        return this.authService.register(dto, role);
+        return this.authService.registerCompany(dto);
     }
     async login(dto) {
         return this.authService.login(dto);
@@ -58,9 +51,8 @@ exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('register/hacker'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [register_dto_1.RegisterDto, Object]),
+    __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerHacker", null);
 __decorate([
@@ -70,13 +62,6 @@ __decorate([
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerCompany", null);
-__decorate([
-    (0, common_1.Post)('register/admin'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "registerAdmin", null);
 __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),

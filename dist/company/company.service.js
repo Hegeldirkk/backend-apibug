@@ -103,23 +103,66 @@ let CompanyService = class CompanyService {
             };
         }
     }
-    create(data) {
-        const company = this.companyRepo.create(data);
-        return this.companyRepo.save(company);
-    }
-    findAll() {
-        return this.companyRepo.find();
-    }
-    async findOne(id) {
-        const company = await this.companyRepo.findOne({ where: { id } });
+    async getCompanyProfile(user) {
+        const company = await this.companyRepo.findOne({
+            where: { user: { id: user.id } },
+            relations: ['user'],
+        });
         if (!company)
-            throw new common_1.NotFoundException('Société non trouvée');
-        return company;
+            throw new common_1.NotFoundException('Entreprise introuvable');
+        return {
+            success: true,
+            message: 'Profil récupéré avec succès',
+            data: {
+                id: company.id,
+                role: company.user.role,
+                statut: company.user.statutCompte,
+                verified: company.user.verified,
+                email: company.user.email,
+                nom: company.nom,
+                description: company.description,
+                type_entreprise: company.type_entreprise,
+                email_company: company.email_company,
+                language: company.language,
+                secteur: company.secteur,
+                statut_actuel: company.statut_actuel,
+                responsable_nom_complet: company.responsable_nom_complet,
+                responsable_contact: company.responsable_contact,
+                fix: company.fix,
+                adresse: company.adresse,
+                urlSite: company.urlSite,
+                num_identification: company.num_identification,
+                registre_commerce: company.registre_commerce,
+                date_creation: company.date_creation,
+                pays: company.pays,
+                longitude: company.longitude,
+                latitude: company.latitude,
+                reseaux_sociaux: company.reseaux_sociaux,
+                horaires_ouverture: company.horaires_ouverture,
+                langues: company.langues,
+                modes_paiement: company.modes_paiement,
+                services: company.services,
+                responsable: company.responsable,
+                logo: company.logo,
+                documents: company.documents,
+                createdAt: company.createdAt,
+                updatedAt: company.updatedAt,
+            },
+        };
     }
-    async update(id, data) {
-        await this.findOne(id);
-        await this.companyRepo.update(id, data);
-        return this.findOne(id);
+    async updateCompanyProfile(user, data) {
+        const company = await this.companyRepo.findOne({
+            where: { user: { id: user.id } },
+        });
+        if (!company)
+            throw new common_1.NotFoundException('Entreprise introuvable');
+        Object.assign(company, data);
+        const updated = await this.companyRepo.save(company);
+        return {
+            success: true,
+            message: 'Profil mis à jour avec succès',
+            data: updated,
+        };
     }
     async updateCompanyInfo(req, dto, files) {
         try {
@@ -177,43 +220,35 @@ let CompanyService = class CompanyService {
                 company.num_identification = dto.num_identification;
             if (dto.date_creation)
                 company.date_creation = dto.date_creation;
-            if (dto.pays)
-                company.pays = dto.pays;
             company.user.docSet = true;
             await this.companyRepo.save(company);
             return {
-                error: false,
+                success: true,
                 message: 'Entreprise mise à jour avec succès',
                 data: {
-                    company: {
-                        id: company.id,
-                        nom: company.nom,
-                        description: company.description,
-                        type_entreprise: company.type_entreprise,
-                        email_company: company.email_company,
-                        language: company.language,
-                        secteur: company.secteur,
-                        statut_actuel: company.statut_actuel,
-                        verfied: company.verified,
-                        registre_commerce: company.registre_commerce,
-                        logo: company.logo,
-                        responsable_nom_complet: company.responsable_nom_complet,
-                        responsable_contact: company.responsable_contact,
-                        fix: company.fix,
-                        email: company.email,
-                        adresse: company.adresse,
-                        urlSite: company.urlSite,
-                        num_identification: company.num_identification,
-                    },
-                    user: {
-                        id: company.user.id,
-                        email: company.user.email,
-                        numeroTelephone: company.user.numeroTelephone,
-                        role: company.user.role,
-                        statutCompte: company.user.statutCompte,
-                        verified: company.user.verified,
-                        docSet: company.user.docSet,
-                    },
+                    id: company.user.id,
+                    email: company.user.email,
+                    numeroTelephone: company.user.numeroTelephone,
+                    role: company.user.role,
+                    statutCompte: company.user.statutCompte,
+                    verified: company.user.verified,
+                    docSet: company.user.docSet,
+                    nom: company.nom,
+                    description: company.description,
+                    type_entreprise: company.type_entreprise,
+                    email_company: company.email_company,
+                    language: company.language,
+                    secteur: company.secteur,
+                    statut_actuel: company.statut_actuel,
+                    verfied: company.verified,
+                    registre_commerce: company.registre_commerce,
+                    logo: company.logo,
+                    responsable_nom_complet: company.responsable_nom_complet,
+                    responsable_contact: company.responsable_contact,
+                    fix: company.fix,
+                    adresse: company.adresse,
+                    urlSite: company.urlSite,
+                    num_identification: company.num_identification,
                 },
             };
         }
@@ -225,10 +260,6 @@ let CompanyService = class CompanyService {
                 message: 'Erreur interne du serveur',
             };
         }
-    }
-    async remove(id) {
-        const company = await this.findOne(id);
-        return this.companyRepo.remove(company);
     }
     async saveFiles(files, req) {
         const savedFiles = {

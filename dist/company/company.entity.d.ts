@@ -12,7 +12,6 @@ export declare class Company {
     responsable_nom_complet: string;
     responsable_contact?: string;
     fix?: string;
-    email: string;
     adresse?: string;
     urlSite?: string;
     num_identification?: string;

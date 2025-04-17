@@ -25,7 +25,6 @@ let Company = class Company {
     responsable_nom_complet;
     responsable_contact;
     fix;
-    email;
     adresse;
     urlSite;
     num_identification;
@@ -96,10 +95,6 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Company.prototype, "fix", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Company.prototype, "email", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

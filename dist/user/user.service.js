@@ -22,31 +22,87 @@ let UserService = class UserService {
     constructor(userRepo) {
         this.userRepo = userRepo;
     }
-    findAll() {
-        return this.userRepo.find();
-    }
     async findById(id) {
-        const user = await this.userRepo.findOne({ where: { id } });
-        if (!user)
+        return this.userRepo.findOne({ where: { id } });
+    }
+    async getProfileByRole(user) {
+        const fullUser = await this.userRepo.findOne({
+            where: { id: user.id },
+            relations: ['company', 'hacker', 'admin'],
+        });
+        if (!fullUser)
             throw new common_1.NotFoundException('Utilisateur non trouvé');
-        return user;
-    }
-    async findByEmail(email) {
-        const user = await this.userRepo.findOne({ where: { email } });
-        if (!user)
-            throw new common_1.NotFoundException('Utilisateur non trouvé');
-        return user;
-    }
-    async create(data) {
-        const user = this.userRepo.create(data);
-        return this.userRepo.save(user);
-    }
-    async update(id, data) {
-        await this.userRepo.update(id, data);
-        return this.findById(id);
-    }
-    async delete(id) {
-        await this.userRepo.delete(id);
+        const { id, email, role, statutCompte, createdAt, docSet } = fullUser;
+        if (role === user_entity_1.UserRole.ENTREPRISE) {
+            const company = fullUser.company;
+            return {
+                role: 'company',
+                data: {
+                    id,
+                    email,
+                    role,
+                    statutCompte,
+                    createdAt,
+                    docSet,
+                    ...(company
+                        ? {
+                            nom: company.nom,
+                            description: company.description,
+                            type_entreprise: company.type_entreprise,
+                            email_company: company.email_company,
+                            language: company.language,
+                            secteur: company.secteur,
+                            statut_actuel: company.statut_actuel,
+                            responsable_nom_complet: company.responsable_nom_complet,
+                            responsable_contact: company.responsable_contact,
+                            fix: company.fix,
+                            adresse: company.adresse,
+                            urlSite: company.urlSite,
+                            num_identification: company.num_identification,
+                            registre_commerce: company.registre_commerce,
+                            date_creation: company.date_creation,
+                            pays: company.pays,
+                            reseaux_sociaux: company.reseaux_sociaux,
+                            horaires_ouverture: company.horaires_ouverture,
+                            modes_paiement: company.modes_paiement,
+                            logo: company.logo,
+                        }
+                        : {}),
+                },
+            };
+        }
+        if (role === user_entity_1.UserRole.ADMIN || role === user_entity_1.UserRole.SUPERADMIN) {
+            return {
+                role,
+                data: {
+                    id,
+                    email,
+                    role,
+                    statutCompte,
+                    createdAt,
+                },
+            };
+        }
+        if (role === user_entity_1.UserRole.HACKER) {
+            return {
+                role: 'hacker',
+                data: {
+                    id,
+                    email,
+                    role,
+                    statutCompte,
+                    createdAt,
+                },
+            };
+        }
+        return {
+            role: 'unknown',
+            data: {
+                id,
+                email,
+                role,
+            },
+        };
     }
 };
 exports.UserService = UserService;

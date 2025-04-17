@@ -12,23 +12,21 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register/hacker')
-  async registerHacker(@Body() dto: RegisterDto, @Res() res: Response) {
-    const role = UserRole.HACKER
-    return this.authService.register(dto, role);
+  async registerHacker(@Body() dto: RegisterDto) {
+    return this.authService.registerHacker(dto);
   }
 
 
   @Post('register/company')
   async registerCompany(@Body() dto: RegisterDto) {
-    const role = UserRole.ENTREPRISE
-    return this.authService.register(dto, role);
+    return this.authService.registerCompany(dto);
   }
 
-  @Post('register/admin')
-  async registerAdmin(@Body() dto: RegisterDto) {
-    const role = UserRole.ADMIN
-    return this.authService.register(dto, role);
-  }
+  // @Post('register/admin')
+  // async registerAdmin(@Body() dto: RegisterDto) {
+  //   const role = UserRole.ADMIN
+  //   return this.authService.register(dto, role);
+  // }
 
   @Post('login')
   async login(@Body() dto: LoginDto) {

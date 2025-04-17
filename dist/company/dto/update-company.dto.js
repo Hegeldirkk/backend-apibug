@@ -26,7 +26,6 @@ class UpdateCompanyDto {
     num_identification;
     registre_commerce;
     date_creation;
-    pays;
     logo;
 }
 exports.UpdateCompanyDto = UpdateCompanyDto;
@@ -94,11 +93,6 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", Date)
 ], UpdateCompanyDto.prototype, "date_creation", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], UpdateCompanyDto.prototype, "pays", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

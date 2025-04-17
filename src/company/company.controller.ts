@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Res,
+  Put,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -18,19 +19,18 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   FileFieldsInterceptor,
-  FilesInterceptor,
 } from '@nestjs/platform-express';
-import { extname } from 'path';
-import { diskStorage } from 'multer';
+import { UpdateProfileDto } from './dto/update-company-profile.dto';
+
 
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @Post()
-  create(@Body() dto: CreateCompanyDto) {
-    return this.companyService.create(dto);
-  }
+  // @Post()
+  // create(@Body() dto: CreateCompanyDto) {
+  //   return this.companyService.create(dto);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Patch('update')
@@ -52,23 +52,35 @@ export class CompanyController {
     return this.companyService.updateCompanyInfo(req, dto, files);
   }
 
-  @Get()
-  findAll() {
-    return this.companyService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Request() req) {
+    return this.companyService.getCompanyProfile(req.user);
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  async updateProfile(@Request() req, @Body() body: UpdateProfileDto) {
+    return this.companyService.updateCompanyProfile(req.user, body);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companyService.findOne(id);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.companyService.findAll();
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateCompanyDto) {
-    return this.companyService.update(id, dto);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.companyService.findOne(id);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(id);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() dto: UpdateCompanyDto) {
+  //   return this.companyService.update(id, dto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.companyService.remove(id);
+  // }
 }

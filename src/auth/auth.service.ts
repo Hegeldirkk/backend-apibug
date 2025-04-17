@@ -5,7 +5,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserRole } from '../user/user.entity';
+import { StatutCompte, User, UserRole } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -35,10 +35,40 @@ export class AuthService {
     private readonly confirmationTokenService: ConfirmationTokenService, // Injection du service de génération de lien
   ) {}
 
-  async register(@Body() dto: RegisterDto, role: UserRole) {
+  // auth.service.ts
+
+  async registerCompany(dto: RegisterDto) {
+    const user = await this.createUserBase(dto, UserRole.ENTREPRISE);
+
+    const company = this.companyRepo.create({ user });
+    await this.companyRepo.save(company);
+
+    await this.sendConfirmationEmail(user);
+
+    return this.buildRegisterResponse(user);
+  }
+
+  async registerHacker(dto: RegisterDto) {
+    const user = await this.createUserBase(dto, UserRole.HACKER);
+
+    const hacker = this.hackerRepo.create({ user });
+    console.log('HACKER OBJ:', hacker); // 👀 Tu dois voir un objet ici
+    await this.hackerRepo.save(hacker);
+
+    await this.sendConfirmationEmail(user);
+
+    return this.buildRegisterResponse(user);
+  }
+
+  // 🔒 méthode privée : création de l’utilisateur avec hash
+  private async createUserBase(
+    dto: RegisterDto,
+    role: UserRole,
+  ): Promise<User> {
     const existing = await this.userRepo.findOne({
-      where: { email: dto.email },
+      where: { email: dto.email, verified: true },
     });
+
     if (existing) {
       throw new BadRequestException({
         success: false,
@@ -51,37 +81,37 @@ export class AuthService {
     const user = this.userRepo.create({
       email: dto.email,
       password: hashed,
-
       role: role,
     });
 
-    await this.userRepo.save(user);
+    return await this.userRepo.save(user);
+  }
 
-    // 🔁 Création d’une entité liée selon le rôle
-    if (role === 'company') {
-      const company = this.companyRepo.create({ user });
-      await this.companyRepo.save(company);
-    } else if (role === 'hacker') {
-      const hacker = this.hackerRepo.create({ user });
-      await this.hackerRepo.save(hacker);
-    }
+  // 📩 méthode privée : envoi de lien de confirmation
+  private async sendConfirmationEmail(user: User) {
+    const response =
+      await this.confirmationTokenService.generateConfirmationLink(
+        user.id,
+        user.email,
+      );
+    console.log('Lien de confirmation envoyé :', response);
+    return response;
+  }
 
-    // Générer et envoyer le lien de confirmation
-    await this.confirmationTokenService.generateConfirmationLink(
-      user.id,
-      user.email,
-    );
-
+  // 📦 méthode privée : format de réponse
+  private buildRegisterResponse(user: User) {
     return {
       success: true,
       message: 'Compte créé, un mail a été envoyé',
       data: {
-        id: user.id,
-        email: user.email,
-        verified: user.verified,
-        statut: user.statutCompte,
-        role: user.role,
-        docSet: user.docSet,
+        user: {
+          id: user.company.id,
+          email: user.email,
+          verified: user.verified,
+          statut: user.statutCompte,
+          role: user.role,
+          docSet: user.docSet,
+        },
       },
     };
   }
@@ -109,9 +139,12 @@ export class AuthService {
       data: {
         access_token: token,
         user: {
-          id: user.id,
+          id: user.company.id,
           email: user.email,
           role: user.role,
+          statut: user.statutCompte,
+          docSet: user.docSet,
+          verified: user.verified,
         },
       },
     };
@@ -155,6 +188,9 @@ export class AuthService {
 
       // Marquer l'utilisateur comme confirmé
       user.verified = true; // Assurez-vous que 'verified' existe dans l'entité User
+      if ( user.role === UserRole.HACKER) {
+        user.statutCompte = StatutCompte.ACTIF; // Mettre à jour le statut du compte
+      }
       await this.userRepo.save(user);
       console.log(`Compte de l'utilisateur ${user.email} confirmé avec succès`);
 
@@ -164,9 +200,12 @@ export class AuthService {
         data: {
           access_token: token,
           user: {
-            id: user.id,
+            id: user.company.id,
             email: user.email,
             role: user.role,
+            statut: user.statutCompte,
+            docSet: user.docSet,
+            verified: user.verified,
           },
         },
       };
@@ -192,6 +231,6 @@ export class AuthService {
     user.password = await bcrypt.hash(dto.newPassword, 10);
     await this.userRepo.save(user);
 
-    return { message: 'Mot de passe modifié avec succès' };
+    return { success: true, message: 'Mot de passe modifié avec succès' };
   }
 }

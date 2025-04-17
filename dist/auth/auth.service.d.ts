@@ -1,4 +1,4 @@
-import { User, UserRole } from '../user/user.entity';
+import { StatutCompte, User, UserRole } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
@@ -16,18 +16,37 @@ export declare class AuthService {
     private readonly hackerRepo;
     private readonly confirmationTokenService;
     constructor(configService: ConfigService, userRepo: Repository<User>, jwtService: JwtService, companyRepo: Repository<Company>, hackerRepo: Repository<Hacker>, confirmationTokenService: ConfirmationTokenService);
-    register(dto: RegisterDto, role: UserRole): Promise<{
+    registerCompany(dto: RegisterDto): Promise<{
         success: boolean;
         message: string;
         data: {
-            id: string;
-            email: string;
-            verified: boolean;
-            statut: import("../user/user.entity").StatutCompte;
-            role: UserRole;
-            docSet: boolean;
+            user: {
+                id: string;
+                email: string;
+                verified: boolean;
+                statut: StatutCompte;
+                role: UserRole;
+                docSet: boolean;
+            };
         };
     }>;
+    registerHacker(dto: RegisterDto): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            user: {
+                id: string;
+                email: string;
+                verified: boolean;
+                statut: StatutCompte;
+                role: UserRole;
+                docSet: boolean;
+            };
+        };
+    }>;
+    private createUserBase;
+    private sendConfirmationEmail;
+    private buildRegisterResponse;
     login(dto: LoginDto): Promise<{
         success: boolean;
         message: string;
@@ -37,6 +56,9 @@ export declare class AuthService {
                 id: string;
                 email: string;
                 role: UserRole;
+                statut: StatutCompte;
+                docSet: boolean;
+                verified: boolean;
             };
         };
     }>;
@@ -49,10 +71,14 @@ export declare class AuthService {
                 id: string;
                 email: string;
                 role: UserRole;
+                statut: StatutCompte;
+                docSet: boolean;
+                verified: boolean;
             };
         };
     }>;
     changePassword(userId: string, dto: ChangePasswordDto): Promise<{
+        success: boolean;
         message: string;
     }>;
 }

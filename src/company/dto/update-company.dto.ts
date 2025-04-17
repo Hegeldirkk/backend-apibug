@@ -5,59 +5,55 @@ export class UpdateCompanyDto {
 
     @IsString()
     @IsNotEmpty()
-    nom?: string;
+    nom?: string; //
 
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    description?: string;
+    description?: string; //
 
     @IsString()
     @IsNotEmpty()
-    type_entreprise?: string;
+    type_entreprise?: string; //
 
     @IsString()
     @IsEmail()
     @IsNotEmpty()
-    email_company?: string;
+    email_company?: string; //
 
     @IsString()
     @IsNotEmpty()
-    language?: string;
+    language?: string; //
 
     @IsString()
     @IsNotEmpty()
-    secteur?: string;
+    secteur?: string; //
 
     @IsString()
-    statut_actuel?: string;
+    statut_actuel?: string; //
 
     @IsString()
-    responsable_nom_complet?: string;
+    responsable_nom_complet?: string; //
 
     @IsString()
-    responsable_contact?: string;
+    responsable_contact?: string; //
 
     @IsString()
-    fix?: string;
+    fix?: string; //
 
     @IsString()
     adresse?: string;
 
     @IsString()
-    num_identification?: string;
+    num_identification?: string; //
 
     @IsOptional()
-    registre_commerce?: string;
+    registre_commerce?: string; //
 
     @IsString()
-    date_creation?: Date;
+    date_creation?: Date; //
 
     @IsOptional()
-    @IsString()
-    pays?: string;
-
-    @IsOptional()
-    logo?: string;
+    logo?: string; //
 
 }

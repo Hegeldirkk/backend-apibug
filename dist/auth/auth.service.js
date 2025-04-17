@@ -19,7 +19,6 @@ const user_entity_1 = require("../user/user.entity");
 const typeorm_2 = require("typeorm");
 const bcrypt = require("bcrypt");
 const jwt_1 = require("@nestjs/jwt");
-const register_dto_1 = require("./dto/register.dto");
 const hacker_entity_1 = require("../hacker/hacker.entity");
 const company_entity_1 = require("../company/company.entity");
 const confirmation_token_service_1 = require("../common/confirmation-token.service");
@@ -39,9 +38,24 @@ let AuthService = class AuthService {
         this.hackerRepo = hackerRepo;
         this.confirmationTokenService = confirmationTokenService;
     }
-    async register(dto, role) {
+    async registerCompany(dto) {
+        const user = await this.createUserBase(dto, user_entity_1.UserRole.ENTREPRISE);
+        const company = this.companyRepo.create({ user });
+        await this.companyRepo.save(company);
+        await this.sendConfirmationEmail(user);
+        return this.buildRegisterResponse(user);
+    }
+    async registerHacker(dto) {
+        const user = await this.createUserBase(dto, user_entity_1.UserRole.HACKER);
+        const hacker = this.hackerRepo.create({ user });
+        console.log('HACKER OBJ:', hacker);
+        await this.hackerRepo.save(hacker);
+        await this.sendConfirmationEmail(user);
+        return this.buildRegisterResponse(user);
+    }
+    async createUserBase(dto, role) {
         const existing = await this.userRepo.findOne({
-            where: { email: dto.email },
+            where: { email: dto.email, verified: true },
         });
         if (existing) {
             throw new common_1.BadRequestException({
@@ -55,26 +69,26 @@ let AuthService = class AuthService {
             password: hashed,
             role: role,
         });
-        await this.userRepo.save(user);
-        if (role === 'company') {
-            const company = this.companyRepo.create({ user });
-            await this.companyRepo.save(company);
-        }
-        else if (role === 'hacker') {
-            const hacker = this.hackerRepo.create({ user });
-            await this.hackerRepo.save(hacker);
-        }
-        await this.confirmationTokenService.generateConfirmationLink(user.id, user.email);
+        return await this.userRepo.save(user);
+    }
+    async sendConfirmationEmail(user) {
+        const response = await this.confirmationTokenService.generateConfirmationLink(user.id, user.email);
+        console.log('Lien de confirmation envoyé :', response);
+        return response;
+    }
+    buildRegisterResponse(user) {
         return {
             success: true,
             message: 'Compte créé, un mail a été envoyé',
             data: {
-                id: user.id,
-                email: user.email,
-                verified: user.verified,
-                statut: user.statutCompte,
-                role: user.role,
-                docSet: user.docSet,
+                user: {
+                    id: user.company.id,
+                    email: user.email,
+                    verified: user.verified,
+                    statut: user.statutCompte,
+                    role: user.role,
+                    docSet: user.docSet,
+                },
             },
         };
     }
@@ -98,9 +112,12 @@ let AuthService = class AuthService {
             data: {
                 access_token: token,
                 user: {
-                    id: user.id,
+                    id: user.company.id,
                     email: user.email,
                     role: user.role,
+                    statut: user.statutCompte,
+                    docSet: user.docSet,
+                    verified: user.verified,
                 },
             },
         };
@@ -131,6 +148,9 @@ let AuthService = class AuthService {
                 });
             }
             user.verified = true;
+            if (user.role === user_entity_1.UserRole.HACKER) {
+                user.statutCompte = user_entity_1.StatutCompte.ACTIF;
+            }
             await this.userRepo.save(user);
             console.log(`Compte de l'utilisateur ${user.email} confirmé avec succès`);
             return {
@@ -139,9 +159,12 @@ let AuthService = class AuthService {
                 data: {
                     access_token: token,
                     user: {
-                        id: user.id,
+                        id: user.company.id,
                         email: user.email,
                         role: user.role,
+                        statut: user.statutCompte,
+                        docSet: user.docSet,
+                        verified: user.verified,
                     },
                 },
             };
@@ -160,16 +183,10 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException('Ancien mot de passe incorrect');
         user.password = await bcrypt.hash(dto.newPassword, 10);
         await this.userRepo.save(user);
-        return { message: 'Mot de passe modifié avec succès' };
+        return { success: true, message: 'Mot de passe modifié avec succès' };
     }
 };
 exports.AuthService = AuthService;
-__decorate([
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [register_dto_1.RegisterDto, String]),
-    __metadata("design:returntype", Promise)
-], AuthService.prototype, "register", null);
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
