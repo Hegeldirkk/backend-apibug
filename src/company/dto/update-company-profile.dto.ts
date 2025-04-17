@@ -37,10 +37,6 @@ import {
     @IsString()
     statut_actuel?: string;
   
-    @IsOptional()
-    @IsBoolean()
-    verified?: boolean;
-  
     // ☎️ Contact
     @IsOptional()
     @IsString()
@@ -70,10 +66,6 @@ import {
     @IsOptional()
     @IsString()
     num_identification?: string;
-  
-    @IsOptional()
-    @IsString()
-    registre_commerce?: string;
   
     @IsOptional()
     @IsDateString()
@@ -107,30 +99,5 @@ import {
     @IsString({ each: true })
     langues?: string[];
   
-    // 💳 Paiements et services
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    modes_paiement?: string[];
-  
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    services?: string[];
-  
-    // 👤 Responsable
-    @IsOptional()
-    @IsString()
-    responsable?: string;
-  
-    // 📸 Médias
-    @IsOptional()
-    @IsString()
-    logo?: string;
-  
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    documents?: string[];
   }
   

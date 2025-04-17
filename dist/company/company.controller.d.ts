@@ -83,7 +83,9 @@ export declare class CompanyController {
             updatedAt: Date;
         };
     }>;
-    updateProfile(req: any, body: UpdateProfileDto): Promise<{
+    updateProfile(req: any, body: UpdateProfileDto, files: {
+        logo?: Express.Multer.File[];
+    }): Promise<{
         success: boolean;
         message: string;
         data: import("./company.entity").Company;

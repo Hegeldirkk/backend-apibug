@@ -17,11 +17,8 @@ import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import {
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileDto } from './dto/update-company-profile.dto';
-
 
 @Controller('companies')
 export class CompanyController {
@@ -57,11 +54,19 @@ export class CompanyController {
   async getProfile(@Request() req) {
     return this.companyService.getCompanyProfile(req.user);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Put('profile')
-  async updateProfile(@Request() req, @Body() body: UpdateProfileDto) {
-    return this.companyService.updateCompanyProfile(req.user, body);
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 1 }]))
+  async updateProfile(
+    @Request() req,
+    @Body() body: UpdateProfileDto,
+    @UploadedFiles()
+    files: {
+      logo?: Express.Multer.File[];
+    },
+  ) {
+    return this.companyService.updateCompanyProfile(req.user, req, body, files);
   }
 
   // @Get()

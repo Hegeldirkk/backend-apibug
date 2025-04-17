@@ -49,7 +49,9 @@ export declare class CompanyService {
             updatedAt: Date;
         };
     }>;
-    updateCompanyProfile(user: User, data: Partial<Company>): Promise<{
+    updateCompanyProfile(user: User, req: any, data: Partial<Company>, files: {
+        logo?: Express.Multer.File[];
+    }): Promise<{
         success: boolean;
         message: string;
         data: Company;
@@ -95,5 +97,6 @@ export declare class CompanyService {
         data?: undefined;
     }>;
     private saveFiles;
+    private saveFiles2;
     private cleanupUploadedFiles;
 }

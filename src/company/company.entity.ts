@@ -48,6 +48,7 @@ import {
   
     @Column({ nullable: true })
     fix?: string;
+
   
     @Column({ nullable: true })
     adresse?: string;

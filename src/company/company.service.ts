@@ -213,14 +213,72 @@ export class CompanyService {
     };
   }
 
-  async updateCompanyProfile(user: User, data: Partial<Company>) {
+  async updateCompanyProfile(
+    user: User,
+    req,
+    data: Partial<Company>,
+    files: {
+      logo?: Express.Multer.File[];
+    },
+  ) {
     const company = await this.companyRepo.findOne({
       where: { user: { id: user.id } },
     });
 
     if (!company) throw new NotFoundException('Entreprise introuvable');
 
-    Object.assign(company, data);
+    const savedFiles = await this.saveFiles(files, req);
+
+    if (savedFiles.logo == "") {
+      throw new BadRequestException("photo de profil requise");
+    }
+
+    if (!data) {
+      throw new BadRequestException('Aucune donnée transmise pour la mise à jour.');
+    }
+
+    // 🔧 Mise à jour champ par champ
+    if (data.nom !== undefined) company.nom = data.nom;
+    if (data.description !== undefined) company.description = data.description;
+    if (data.type_entreprise !== undefined)
+      company.type_entreprise = data.type_entreprise;
+    if (data.email_company !== undefined)
+      company.email_company = data.email_company;
+    if (data.language !== undefined) company.language = data.language;
+    if (data.secteur !== undefined) company.secteur = data.secteur;
+    if (data.statut_actuel !== undefined)
+      company.statut_actuel = data.statut_actuel;
+    if (data.verified !== undefined) company.verified = data.verified;
+
+    if (data.responsable_nom_complet !== undefined)
+      company.responsable_nom_complet = data.responsable_nom_complet;
+    if (data.responsable_contact !== undefined)
+      company.responsable_contact = data.responsable_contact;
+    if (data.fix !== undefined) company.fix = data.fix;
+    if (data.adresse !== undefined) company.adresse = data.adresse;
+    if (data.urlSite !== undefined) company.urlSite = data.urlSite;
+
+    if (data.num_identification !== undefined)
+      company.num_identification = data.num_identification;
+
+    if (data.date_creation !== undefined)
+      company.date_creation = data.date_creation;
+
+    if (data.pays !== undefined) company.pays = data.pays;
+    if (data.longitude !== undefined) company.longitude = data.longitude;
+    if (data.latitude !== undefined) company.latitude = data.latitude;
+
+    if (data.reseaux_sociaux !== undefined)
+      company.reseaux_sociaux = data.reseaux_sociaux;
+    if (data.horaires_ouverture !== undefined)
+      company.horaires_ouverture = data.horaires_ouverture;
+    if (data.langues !== undefined) company.langues = data.langues;
+
+    if (data.services !== undefined) company.services = data.services;
+
+    if (data.responsable !== undefined) company.responsable = data.responsable;
+    if (data.logo !== undefined) company.logo = savedFiles.logo;
+
 
     const updated = await this.companyRepo.save(company);
 
@@ -350,6 +408,51 @@ export class CompanyService {
 
   // Méthode pour enregistrer les fichiers dans un répertoire
   private async saveFiles(
+    files: {
+      registre_commerce?: Express.Multer.File[];
+      logo?: Express.Multer.File[];
+    },
+    req,
+  ) {
+    const savedFiles: {
+      registre_commerce: string;
+      logo: string;
+    } = {
+      registre_commerce: '',
+      logo: '',
+    };
+
+    const userId = req.user.id;
+    const userDir = path.join(PARTNER_DOCS_DIR, `user_${userId}`);
+
+    try {
+      // Sauvegarder registre de commerce
+      if (files.registre_commerce && files.registre_commerce.length > 0) {
+        const result = await this.saveFile(files.registre_commerce[0], userDir);
+        if (!result.success || !result.filePath) {
+          throw new Error(result.error);
+        }
+        savedFiles.registre_commerce = result.filePath;
+      }
+
+      // Sauvegarder logo
+      if (files.logo && files.logo.length > 0) {
+        const result = await this.saveFile(files.logo[0], userDir);
+        if (!result.success || !result.filePath) {
+          throw new Error(result.error);
+        }
+        savedFiles.logo = result.filePath;
+      }
+
+      return savedFiles;
+    } catch (error) {
+      // En cas d'erreur, nettoyer les fichiers déjà uploadés
+      await this.cleanupUploadedFiles(savedFiles);
+      throw error;
+    }
+  }
+
+  private async saveFiles2(
     files: {
       registre_commerce?: Express.Multer.File[];
       logo?: Express.Multer.File[];
