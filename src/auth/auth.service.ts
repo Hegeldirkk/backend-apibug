@@ -40,11 +40,13 @@ export class AuthService {
 
   // 📩 méthode privée : envoi de lien de confirmation
   private async sendConfirmationEmail(user: User) {
+    const ait = 0;
     const response =
       await this.confirmationTokenService.generateConfirmationLink(
         user.id,
         user.email,
         user.role,
+        ait,
       );
     console.log('Lien de confirmation envoyé :', response);
     return response;
@@ -129,6 +131,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       role: user.role,
+      ait: 2,
     };
 
     const token = this.jwtService.sign(payload);

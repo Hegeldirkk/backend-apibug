@@ -33,6 +33,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!user) {
             throw new common_2.UnauthorizedException('Utilisateur non trouvé');
         }
+        console.log('Utilisateur trouvé : ', user);
         return user;
     }
 };

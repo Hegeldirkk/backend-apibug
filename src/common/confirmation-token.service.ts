@@ -15,11 +15,11 @@ export class ConfirmationTokenService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async generateConfirmationLink(userId: string, email: string, role: UserRole): Promise<void> {
+  async generateConfirmationLink(userId: string, email: string, role: UserRole, ait: number): Promise<void> {
     try {
       // Générer un token de confirmation
       const token = this.jwtService.sign(
-        { userId: userId, role: role },
+        { userId: userId, role: role, email: email, ait: ait },
         { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '1h' }
       );
 

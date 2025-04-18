@@ -42,7 +42,8 @@ let AuthService = class AuthService {
         this.responseTransformer = responseTransformer;
     }
     async sendConfirmationEmail(user) {
-        const response = await this.confirmationTokenService.generateConfirmationLink(user.id, user.email, user.role);
+        const ait = 0;
+        const response = await this.confirmationTokenService.generateConfirmationLink(user.id, user.email, user.role, ait);
         console.log('Lien de confirmation envoyé :', response);
         return response;
     }
@@ -103,6 +104,7 @@ let AuthService = class AuthService {
             id: user.id,
             email: user.email,
             role: user.role,
+            ait: 2,
         };
         const token = this.jwtService.sign(payload);
         return {

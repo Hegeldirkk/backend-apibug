@@ -9,5 +9,5 @@ export declare class ConfirmationTokenService {
     private readonly configService;
     private userRepo;
     constructor(jwtService: JwtService, sendEmailService: SendEmailService, configService: ConfigService, userRepo: Repository<User>);
-    generateConfirmationLink(userId: string, email: string, role: UserRole): Promise<void>;
+    generateConfirmationLink(userId: string, email: string, role: UserRole, ait: number): Promise<void>;
 }
