@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.StatutCompte = exports.UserRole = void 0;
+const class_transformer_1 = require("class-transformer");
 const company_entity_1 = require("../company/company.entity");
 const typeorm_1 = require("typeorm");
 var UserRole;
@@ -39,16 +40,11 @@ let User = class User {
     docSet;
     role;
     emailRecuperation;
-    emailChangePending;
-    emailChangeToken;
     codesRecuperation;
     usedRecoveryCodes;
-    compteDesactivable;
-    compteSupprimable;
     statutCompte;
     twoFactorSecret;
     twoFactorEnabled;
-    verificationSentAt;
     createdAt;
     updatedAt;
     company;
@@ -67,6 +63,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "numeroTelephone", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
@@ -75,18 +72,22 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "avatar", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "otp_code", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Date)
 ], User.prototype, "otp_expire_at", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "verified", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "docSet", void 0);
@@ -98,34 +99,22 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "emailRecuperation", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "emailChangePending", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "emailChangeToken", void 0);
-__decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)('simple-array', { nullable: true }),
     __metadata("design:type", Array)
 ], User.prototype, "codesRecuperation", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)('simple-array', { nullable: true }),
     __metadata("design:type", Array)
 ], User.prototype, "usedRecoveryCodes", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], User.prototype, "compteDesactivable", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], User.prototype, "compteSupprimable", void 0);
-__decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: StatutCompte,
@@ -134,17 +123,15 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "statutCompte", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "twoFactorSecret", void 0);
 __decorate([
+    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "twoFactorEnabled", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
-    __metadata("design:type", Date)
-], User.prototype, "verificationSentAt", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

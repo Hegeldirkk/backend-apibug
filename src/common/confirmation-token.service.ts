@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SendEmailService } from '../common/send-email.service';
 import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { User, UserRole } from 'src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -15,11 +15,11 @@ export class ConfirmationTokenService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async generateConfirmationLink(userId: string, email: string): Promise<void> {
+  async generateConfirmationLink(userId: string, email: string, role: UserRole): Promise<void> {
     try {
       // Générer un token de confirmation
       const token = this.jwtService.sign(
-        { userId: userId },
+        { userId: userId, role: role },
         { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: '1h' }
       );
 

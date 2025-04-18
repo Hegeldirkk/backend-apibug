@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Request,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,6 +11,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import * as path from 'path';
 import { User } from 'src/user/user.entity';
 import { UploadService } from 'src/common/upload/upload.service';
+import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
 
 @Injectable()
 export class CompanyService {
@@ -17,6 +19,7 @@ export class CompanyService {
     @InjectRepository(Company)
     private readonly companyRepo: Repository<Company>,
     private readonly uploadService: UploadService,
+    private readonly responseTransformer: ResponseTransformerService,
   ) {}
   async getCompanyProfile(user: User) {
     const company = await this.companyRepo.findOne({
@@ -29,44 +32,7 @@ export class CompanyService {
     return {
       success: true,
       message: 'Profil récupéré avec succès',
-      data: {
-        //user
-        id: company.id,
-        role: company.user.role,
-        statut: company.user.statutCompte,
-        verified: company.user.verified,
-        email: company.user.email,
-        avatar: company.user.avatar,
-
-        //company
-        nom: company.nom,
-        description: company.description,
-        type_entreprise: company.type_entreprise,
-        email_company: company.email_company,
-        language: company.language,
-        secteur: company.secteur,
-        statut_actuel: company.statut_actuel,
-        responsable_nom_complet: company.responsable_nom_complet,
-        responsable_contact: company.responsable_contact,
-        fix: company.fix,
-        adresse: company.adresse,
-        urlSite: company.urlSite,
-        num_identification: company.num_identification,
-        registre_commerce: company.registre_commerce,
-        date_creation: company.date_creation,
-        pays: company.pays,
-        longitude: company.longitude,
-        latitude: company.latitude,
-        reseaux_sociaux: company.reseaux_sociaux,
-        horaires_ouverture: company.horaires_ouverture,
-        langues: company.langues,
-        modes_paiement: company.modes_paiement,
-        services: company.services,
-        document_outscope: company.responsable,
-        inscope: company.outscope,
-        createdAt: company.createdAt,
-        updatedAt: company.updatedAt,
-      },
+      data: this.responseTransformer.transform(company),
     };
   }
 
@@ -128,12 +94,12 @@ export class CompanyService {
     return {
       success: true,
       message: 'Profil mis à jour avec succès',
-      data: updated,
+      data: this.responseTransformer.transform(updated),
     };
   }
 
   async updateCompanyInfo(
-    req,
+    @Request() req,
     dto: UpdateCompanyDto,
     files: {
       registre_commerce?: Express.Multer.File[];
@@ -204,39 +170,12 @@ export class CompanyService {
       if (dto.date_creation) company.date_creation = dto.date_creation;
       company.user.docSet = true; // Mettre à jour le statut du document de l'utilisateur
 
-      await this.companyRepo.save(company);
+      const updated = await this.companyRepo.save(company);
 
       return {
         success: true,
         message: 'Entreprise mise à jour avec succès',
-        data: {
-          //user
-          id: company.user.id,
-          email: company.user.email,
-          numeroTelephone: company.user.numeroTelephone,
-          role: company.user.role,
-          statutCompte: company.user.statutCompte,
-          verified: company.user.verified,
-          docSet: company.user.docSet,
-          avatar: company.user.avatar,
-
-          //company
-          nom: company.nom,
-          description: company.description,
-          type_entreprise: company.type_entreprise,
-          email_company: company.email_company,
-          language: company.language,
-          secteur: company.secteur,
-          statut_actuel: company.statut_actuel,
-          verfied: company.verified,
-          registre_commerce: company.registre_commerce,
-          responsable_nom_complet: company.responsable_nom_complet,
-          responsable_contact: company.responsable_contact,
-          fix: company.fix,
-          adresse: company.adresse,
-          urlSite: company.urlSite,
-          num_identification: company.num_identification,
-        },
+        data: this.responseTransformer.transform(updated),
       };
     } catch (error) {
       console.error(

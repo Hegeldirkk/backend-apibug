@@ -31,9 +31,9 @@ let ConfirmationTokenService = class ConfirmationTokenService {
         this.configService = configService;
         this.userRepo = userRepo;
     }
-    async generateConfirmationLink(userId, email) {
+    async generateConfirmationLink(userId, email, role) {
         try {
-            const token = this.jwtService.sign({ userId: userId }, { secret: this.configService.get('JWT_SECRET'), expiresIn: '1h' });
+            const token = this.jwtService.sign({ userId: userId, role: role }, { secret: this.configService.get('JWT_SECRET'), expiresIn: '1h' });
             const user = await this.userRepo.findOne({ where: { id: userId } });
             if (!user) {
                 throw new common_1.BadRequestException('Utilisateur non trouvé');

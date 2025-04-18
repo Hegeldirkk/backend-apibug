@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginDto = void 0;
 const class_validator_1 = require("class-validator");
+const user_entity_1 = require("../../user/user.entity");
 class LoginDto {
     email;
     password;
+    role;
 }
 exports.LoginDto = LoginDto;
 __decorate([
@@ -27,4 +29,10 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(user_entity_1.UserRole, {
+        message: `Le rôle doit être l'une des valeurs suivantes : ${Object.values(user_entity_1.UserRole).join(', ')}`,
+    }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "role", void 0);
 //# sourceMappingURL=login.dto.js.map

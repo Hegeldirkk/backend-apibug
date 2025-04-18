@@ -6,11 +6,6 @@ const common_1 = require("@nestjs/common");
 const path = require("path");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors({
-        origin: 'http://192.168.1.8:5173',
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        preflightContinue: false,
-    });
     app.useStaticAssets(path.join(__dirname, '..', 'uploads'), {
         prefix: '/uploads',
     });

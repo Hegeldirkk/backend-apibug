@@ -8,6 +8,13 @@ import {
 } from 'typeorm';
 import { Company } from '../company/company.entity';
 
+export enum ProgramStatus {
+  NOUVEAU = 'nouveau',
+  ACTIF = 'actif',
+  FERME = 'ferme',
+  MODIFIED = 'modified',
+}
+
 @Entity('programs')
 export class Program {
   @PrimaryGeneratedColumn('uuid')
@@ -38,6 +45,13 @@ export class Program {
     description: string;
   }>;
 
+  @Column({ type: 'json', nullable: true })
+  outscope: Array<{
+    cible: string;
+    type: string;
+    raison: string;
+  }>;
+
   @ManyToOne(() => Company, (company) => company.programs, {
     onDelete: 'CASCADE',
   })
@@ -45,6 +59,13 @@ export class Program {
 
   @Column({ nullable: true })
   markdown: string;
+
+  @Column({
+    type: 'enum',
+    enum: ProgramStatus,
+    default: ProgramStatus.NOUVEAU,
+  })
+  statut: ProgramStatus;
 
   @CreateDateColumn()
   createdAt: Date;

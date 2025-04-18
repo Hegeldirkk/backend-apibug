@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Company } from 'src/company/company.entity';
 import {
   Entity,
@@ -34,21 +35,26 @@ export class User {
   @Column({ nullable: true })
   numeroTelephone: string;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   password: string;
 
   @Column({ nullable: true })
   avatar: string;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   otp_code: string;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   otp_expire_at: Date;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ default: false })
   verified: boolean;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ default: false })
   docSet: boolean;
 
@@ -59,28 +65,19 @@ export class User {
   role: UserRole;
 
   // 🔐 Authentification & Sécurité
-
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   emailRecuperation?: string;
 
-  @Column({ nullable: true })
-  emailChangePending?: string;
-
-  @Column({ nullable: true })
-  emailChangeToken?: string;
-
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column('simple-array', { nullable: true })
   codesRecuperation?: string[];
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column('simple-array', { nullable: true })
   usedRecoveryCodes?: string[];
 
-  @Column({ default: true })
-  compteDesactivable: boolean;
-
-  @Column({ default: true })
-  compteSupprimable: boolean;
-
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({
     type: 'enum',
     enum: StatutCompte,
@@ -88,14 +85,13 @@ export class User {
   })
   statutCompte: StatutCompte;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   twoFactorSecret?: string;
 
+  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ default: false })
   twoFactorEnabled: boolean;
-
-  @Column({ type: 'timestamp', nullable: true })
-  verificationSentAt?: Date;
 
   @CreateDateColumn()
   createdAt: Date;

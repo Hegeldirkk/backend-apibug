@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { ConfirmationTokenService } from './confirmation-token.service';
 import { JwtModule } from '@nestjs/jwt';
+import { ResponseTransformerService } from './services/response-transformer.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ConfigModule, JwtModule], // Importation du module de configuration pour accéder au fichier .env
@@ -15,11 +16,13 @@ import { JwtModule } from '@nestjs/jwt';
     SendEmailService,
     SendSmsService,
     ConfirmationTokenService,
+    ResponseTransformerService,
   ],
   exports: [
     SendEmailService,
     SendSmsService,
     ConfirmationTokenService,
+    ResponseTransformerService,
   ], // Exporte le service pour pouvoir l'utiliser ailleurs
 })
 export class CommonModule {}

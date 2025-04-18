@@ -3,53 +3,21 @@ import { Company } from './company.entity';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { User } from 'src/user/user.entity';
 import { UploadService } from 'src/common/upload/upload.service';
+import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
 export declare class CompanyService {
     private readonly companyRepo;
     private readonly uploadService;
-    constructor(companyRepo: Repository<Company>, uploadService: UploadService);
+    private readonly responseTransformer;
+    constructor(companyRepo: Repository<Company>, uploadService: UploadService, responseTransformer: ResponseTransformerService);
     getCompanyProfile(user: User): Promise<{
         success: boolean;
         message: string;
-        data: {
-            id: string;
-            role: import("src/user/user.entity").UserRole;
-            statut: import("src/user/user.entity").StatutCompte;
-            verified: boolean;
-            email: string;
-            avatar: string;
-            nom: string | undefined;
-            description: string | undefined;
-            type_entreprise: string | undefined;
-            email_company: string | undefined;
-            language: string | undefined;
-            secteur: string | undefined;
-            statut_actuel: string | undefined;
-            responsable_nom_complet: string;
-            responsable_contact: string | undefined;
-            fix: string | undefined;
-            adresse: string | undefined;
-            urlSite: string | undefined;
-            num_identification: string | undefined;
-            registre_commerce: string | undefined;
-            date_creation: Date | undefined;
-            pays: string | undefined;
-            longitude: string | undefined;
-            latitude: string | undefined;
-            reseaux_sociaux: string[] | undefined;
-            horaires_ouverture: string | undefined;
-            langues: string[] | undefined;
-            modes_paiement: string[] | undefined;
-            services: string[] | undefined;
-            document_outscope: string | undefined;
-            inscope: string;
-            createdAt: Date;
-            updatedAt: Date;
-        };
+        data: Record<string, any>;
     }>;
     updateCompanyProfile(user: User, data: Partial<Company>): Promise<{
         success: boolean;
         message: string;
-        data: Company;
+        data: Record<string, any>;
     }>;
     updateCompanyInfo(req: any, dto: UpdateCompanyDto, files: {
         registre_commerce?: Express.Multer.File[];
@@ -57,31 +25,7 @@ export declare class CompanyService {
     }): Promise<{
         success: boolean;
         message: string;
-        data: {
-            id: string;
-            email: string;
-            numeroTelephone: string;
-            role: import("src/user/user.entity").UserRole;
-            statutCompte: import("src/user/user.entity").StatutCompte;
-            verified: boolean;
-            docSet: boolean;
-            avatar: string;
-            nom: string | undefined;
-            description: string | undefined;
-            type_entreprise: string | undefined;
-            email_company: string | undefined;
-            language: string | undefined;
-            secteur: string | undefined;
-            statut_actuel: string | undefined;
-            verfied: boolean;
-            registre_commerce: string | undefined;
-            responsable_nom_complet: string;
-            responsable_contact: string | undefined;
-            fix: string | undefined;
-            adresse: string | undefined;
-            urlSite: string | undefined;
-            num_identification: string | undefined;
-        };
+        data: Record<string, any>;
         statusCode?: undefined;
         error?: undefined;
     } | {

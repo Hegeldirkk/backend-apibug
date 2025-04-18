@@ -17,14 +17,18 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const company_entity_1 = require("./company.entity");
+const update_company_dto_1 = require("./dto/update-company.dto");
 const path = require("path");
 const upload_service_1 = require("../common/upload/upload.service");
+const response_transformer_service_1 = require("../common/services/response-transformer.service");
 let CompanyService = class CompanyService {
     companyRepo;
     uploadService;
-    constructor(companyRepo, uploadService) {
+    responseTransformer;
+    constructor(companyRepo, uploadService, responseTransformer) {
         this.companyRepo = companyRepo;
         this.uploadService = uploadService;
+        this.responseTransformer = responseTransformer;
     }
     async getCompanyProfile(user) {
         const company = await this.companyRepo.findOne({
@@ -36,41 +40,7 @@ let CompanyService = class CompanyService {
         return {
             success: true,
             message: 'Profil récupéré avec succès',
-            data: {
-                id: company.id,
-                role: company.user.role,
-                statut: company.user.statutCompte,
-                verified: company.user.verified,
-                email: company.user.email,
-                avatar: company.user.avatar,
-                nom: company.nom,
-                description: company.description,
-                type_entreprise: company.type_entreprise,
-                email_company: company.email_company,
-                language: company.language,
-                secteur: company.secteur,
-                statut_actuel: company.statut_actuel,
-                responsable_nom_complet: company.responsable_nom_complet,
-                responsable_contact: company.responsable_contact,
-                fix: company.fix,
-                adresse: company.adresse,
-                urlSite: company.urlSite,
-                num_identification: company.num_identification,
-                registre_commerce: company.registre_commerce,
-                date_creation: company.date_creation,
-                pays: company.pays,
-                longitude: company.longitude,
-                latitude: company.latitude,
-                reseaux_sociaux: company.reseaux_sociaux,
-                horaires_ouverture: company.horaires_ouverture,
-                langues: company.langues,
-                modes_paiement: company.modes_paiement,
-                services: company.services,
-                document_outscope: company.responsable,
-                inscope: company.outscope,
-                createdAt: company.createdAt,
-                updatedAt: company.updatedAt,
-            },
+            data: this.responseTransformer.transform(company),
         };
     }
     async updateCompanyProfile(user, data) {
@@ -130,7 +100,7 @@ let CompanyService = class CompanyService {
         return {
             success: true,
             message: 'Profil mis à jour avec succès',
-            data: updated,
+            data: this.responseTransformer.transform(updated),
         };
     }
     async updateCompanyInfo(req, dto, files) {
@@ -191,35 +161,11 @@ let CompanyService = class CompanyService {
             if (dto.date_creation)
                 company.date_creation = dto.date_creation;
             company.user.docSet = true;
-            await this.companyRepo.save(company);
+            const updated = await this.companyRepo.save(company);
             return {
                 success: true,
                 message: 'Entreprise mise à jour avec succès',
-                data: {
-                    id: company.user.id,
-                    email: company.user.email,
-                    numeroTelephone: company.user.numeroTelephone,
-                    role: company.user.role,
-                    statutCompte: company.user.statutCompte,
-                    verified: company.user.verified,
-                    docSet: company.user.docSet,
-                    avatar: company.user.avatar,
-                    nom: company.nom,
-                    description: company.description,
-                    type_entreprise: company.type_entreprise,
-                    email_company: company.email_company,
-                    language: company.language,
-                    secteur: company.secteur,
-                    statut_actuel: company.statut_actuel,
-                    verfied: company.verified,
-                    registre_commerce: company.registre_commerce,
-                    responsable_nom_complet: company.responsable_nom_complet,
-                    responsable_contact: company.responsable_contact,
-                    fix: company.fix,
-                    adresse: company.adresse,
-                    urlSite: company.urlSite,
-                    num_identification: company.num_identification,
-                },
+                data: this.responseTransformer.transform(updated),
             };
         }
         catch (error) {
@@ -233,10 +179,17 @@ let CompanyService = class CompanyService {
     }
 };
 exports.CompanyService = CompanyService;
+__decorate([
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_company_dto_1.UpdateCompanyDto, Object]),
+    __metadata("design:returntype", Promise)
+], CompanyService.prototype, "updateCompanyInfo", null);
 exports.CompanyService = CompanyService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(company_entity_1.Company)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        upload_service_1.UploadService])
+        upload_service_1.UploadService,
+        response_transformer_service_1.ResponseTransformerService])
 ], CompanyService);
 //# sourceMappingURL=company.service.js.map

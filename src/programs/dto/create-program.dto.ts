@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class ScopeDto {
+class InScopeDto {
   @IsString()
   type: string;
 
@@ -10,6 +10,17 @@ class ScopeDto {
 
   @IsString()
   description: string;
+}
+
+class OutScopeDto {
+  @IsString()
+  cible: string;
+
+  @IsString()
+  type: string;
+
+  @IsString()
+  raison: string;
 }
 
 export class CreateProgramDto {
@@ -33,8 +44,13 @@ export class CreateProgramDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ScopeDto)
-  inscope: ScopeDto[];
+  @Type(() => InScopeDto)
+  inscope: InScopeDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OutScopeDto)
+  outscope: OutScopeDto[];
 
   @IsString()
   markdown?: string;

@@ -15,6 +15,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../user/user.entity");
 const confirmation_token_service_1 = require("./confirmation-token.service");
 const jwt_1 = require("@nestjs/jwt");
+const response_transformer_service_1 = require("./services/response-transformer.service");
 let CommonModule = class CommonModule {
 };
 exports.CommonModule = CommonModule;
@@ -25,11 +26,13 @@ exports.CommonModule = CommonModule = __decorate([
             send_email_service_1.SendEmailService,
             send_sms_service_1.SendSmsService,
             confirmation_token_service_1.ConfirmationTokenService,
+            response_transformer_service_1.ResponseTransformerService,
         ],
         exports: [
             send_email_service_1.SendEmailService,
             send_sms_service_1.SendSmsService,
             confirmation_token_service_1.ConfirmationTokenService,
+            response_transformer_service_1.ResponseTransformerService,
         ],
     })
 ], CommonModule);

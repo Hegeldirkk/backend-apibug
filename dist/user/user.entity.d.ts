@@ -24,16 +24,11 @@ export declare class User {
     docSet: boolean;
     role: UserRole;
     emailRecuperation?: string;
-    emailChangePending?: string;
-    emailChangeToken?: string;
     codesRecuperation?: string[];
     usedRecoveryCodes?: string[];
-    compteDesactivable: boolean;
-    compteSupprimable: boolean;
     statutCompte: StatutCompte;
     twoFactorSecret?: string;
     twoFactorEnabled: boolean;
-    verificationSentAt?: Date;
     createdAt: Date;
     updatedAt: Date;
     company: Company;
