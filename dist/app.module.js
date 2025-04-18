@@ -12,12 +12,10 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
 const typeorm_1 = require("@nestjs/typeorm");
-const company_entity_1 = require("./company/company.entity");
-const user_entity_1 = require("./user/user.entity");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const config_1 = require("@nestjs/config");
-const hacker_entity_1 = require("./hacker/hacker.entity");
+const program_module_1 = require("./programs/program.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,10 +33,11 @@ exports.AppModule = AppModule = __decorate([
                 username: 'root',
                 password: '',
                 database: 'bugproject',
-                entities: [user_entity_1.User, company_entity_1.Company, hacker_entity_1.Hacker],
+                entities: [__dirname + '/**/*.entity{.ts,.js}'],
                 synchronize: true,
             }),
             auth_module_1.AuthModule,
+            program_module_1.ProgramModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

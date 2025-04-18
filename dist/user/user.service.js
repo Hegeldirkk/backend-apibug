@@ -47,6 +47,7 @@ let UserService = class UserService {
                     ...(company
                         ? {
                             nom: company.nom,
+                            avatar: company.user.avatar,
                             description: company.description,
                             type_entreprise: company.type_entreprise,
                             email_company: company.email_company,
@@ -65,7 +66,6 @@ let UserService = class UserService {
                             reseaux_sociaux: company.reseaux_sociaux,
                             horaires_ouverture: company.horaires_ouverture,
                             modes_paiement: company.modes_paiement,
-                            logo: company.logo,
                         }
                         : {}),
                 },

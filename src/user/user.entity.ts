@@ -38,6 +38,9 @@ export class User {
   password: string;
 
   @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
   otp_code: string;
 
   @Column({ nullable: true })

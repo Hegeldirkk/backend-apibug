@@ -2,7 +2,6 @@ import {
     IsOptional,
     IsString,
     IsEmail,
-    IsBoolean,
     IsDateString,
     IsArray,
   } from 'class-validator';
@@ -49,10 +48,6 @@ import {
     @IsOptional()
     @IsString()
     fix?: string;
-  
-    @IsOptional()
-    @IsEmail()
-    email?: string;
   
     @IsOptional()
     @IsString()

@@ -41,6 +41,7 @@ export class AuthService {
     const user = await this.createUserBase(dto, UserRole.ENTREPRISE);
 
     const company = this.companyRepo.create({ user });
+
     await this.companyRepo.save(company);
 
     await this.sendConfirmationEmail(user);
@@ -139,7 +140,7 @@ export class AuthService {
       data: {
         access_token: token,
         user: {
-          id: user.company.id,
+          id: user.id,
           email: user.email,
           role: user.role,
           statut: user.statutCompte,

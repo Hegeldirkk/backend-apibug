@@ -30,8 +30,8 @@ let CompanyController = class CompanyController {
     async getProfile(req) {
         return this.companyService.getCompanyProfile(req.user);
     }
-    async updateProfile(req, body, files) {
-        return this.companyService.updateCompanyProfile(req.user, req, body, files);
+    async updateProfile(req, body) {
+        return this.companyService.updateCompanyProfile(req.user, req);
     }
 };
 exports.CompanyController = CompanyController;
@@ -60,12 +60,10 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Put)('profile'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([{ name: 'logo', maxCount: 1 }])),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_company_profile_dto_1.UpdateProfileDto, Object]),
+    __metadata("design:paramtypes", [Object, update_company_profile_dto_1.UpdateProfileDto]),
     __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "updateProfile", null);
 exports.CompanyController = CompanyController = __decorate([

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Company = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../user/user.entity");
+const program_entity_1 = require("../programs/program.entity");
 let Company = class Company {
     id;
     nom;
@@ -28,7 +29,6 @@ let Company = class Company {
     adresse;
     urlSite;
     num_identification;
-    user;
     pushToken;
     registre_commerce;
     date_creation;
@@ -41,8 +41,9 @@ let Company = class Company {
     modes_paiement;
     services;
     responsable;
-    logo;
-    documents;
+    outscope;
+    user;
+    programs;
     createdAt;
     updatedAt;
 };
@@ -108,11 +109,6 @@ __decorate([
     __metadata("design:type", String)
 ], Company.prototype, "num_identification", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", user_entity_1.User)
-], Company.prototype, "user", void 0);
-__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Company.prototype, "pushToken", void 0);
@@ -163,11 +159,16 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Company.prototype, "logo", void 0);
+], Company.prototype, "outscope", void 0);
 __decorate([
-    (0, typeorm_1.Column)('simple-array', { nullable: true }),
+    (0, typeorm_1.OneToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", user_entity_1.User)
+], Company.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => program_entity_1.Program, (program) => program.company),
     __metadata("design:type", Array)
-], Company.prototype, "documents", void 0);
+], Company.prototype, "programs", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

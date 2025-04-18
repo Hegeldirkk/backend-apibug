@@ -112,7 +112,7 @@ let AuthService = class AuthService {
             data: {
                 access_token: token,
                 user: {
-                    id: user.company.id,
+                    id: user.id,
                     email: user.email,
                     role: user.role,
                     statut: user.statutCompte,

@@ -18,6 +18,7 @@ export declare class CompanyController {
             statutCompte: import("../user/user.entity").StatutCompte;
             verified: boolean;
             docSet: boolean;
+            avatar: string;
             nom: string | undefined;
             description: string | undefined;
             type_entreprise: string | undefined;
@@ -27,7 +28,6 @@ export declare class CompanyController {
             statut_actuel: string | undefined;
             verfied: boolean;
             registre_commerce: string | undefined;
-            logo: string | undefined;
             responsable_nom_complet: string;
             responsable_contact: string | undefined;
             fix: string | undefined;
@@ -53,6 +53,7 @@ export declare class CompanyController {
             statut: import("../user/user.entity").StatutCompte;
             verified: boolean;
             email: string;
+            avatar: string;
             nom: string | undefined;
             description: string | undefined;
             type_entreprise: string | undefined;
@@ -76,16 +77,13 @@ export declare class CompanyController {
             langues: string[] | undefined;
             modes_paiement: string[] | undefined;
             services: string[] | undefined;
-            responsable: string | undefined;
-            logo: string | undefined;
-            documents: string[] | undefined;
+            document_outscope: string | undefined;
+            inscope: string;
             createdAt: Date;
             updatedAt: Date;
         };
     }>;
-    updateProfile(req: any, body: UpdateProfileDto, files: {
-        logo?: Express.Multer.File[];
-    }): Promise<{
+    updateProfile(req: any, body: UpdateProfileDto): Promise<{
         success: boolean;
         message: string;
         data: import("./company.entity").Company;

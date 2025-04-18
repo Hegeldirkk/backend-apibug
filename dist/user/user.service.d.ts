@@ -8,6 +8,7 @@ export declare class UserService {
         role: string;
         data: {
             nom?: string | undefined;
+            avatar?: string | undefined;
             description?: string | undefined;
             type_entreprise?: string | undefined;
             email_company?: string | undefined;
@@ -26,7 +27,6 @@ export declare class UserService {
             reseaux_sociaux?: string[] | undefined;
             horaires_ouverture?: string | undefined;
             modes_paiement?: string[] | undefined;
-            logo?: string | undefined;
             id: string;
             email: string;
             role: UserRole.ENTREPRISE;

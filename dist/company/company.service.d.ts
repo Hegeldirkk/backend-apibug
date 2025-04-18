@@ -2,14 +2,11 @@ import { Repository } from 'typeorm';
 import { Company } from './company.entity';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { User } from 'src/user/user.entity';
+import { UploadService } from 'src/common/upload/upload.service';
 export declare class CompanyService {
     private readonly companyRepo;
-    constructor(companyRepo: Repository<Company>);
-    private initializeUploadDirectories;
-    private validateFile;
-    private ensureDirectoryExists;
-    private generateUniqueFileName;
-    private saveFile;
+    private readonly uploadService;
+    constructor(companyRepo: Repository<Company>, uploadService: UploadService);
     getCompanyProfile(user: User): Promise<{
         success: boolean;
         message: string;
@@ -19,6 +16,7 @@ export declare class CompanyService {
             statut: import("src/user/user.entity").StatutCompte;
             verified: boolean;
             email: string;
+            avatar: string;
             nom: string | undefined;
             description: string | undefined;
             type_entreprise: string | undefined;
@@ -42,16 +40,13 @@ export declare class CompanyService {
             langues: string[] | undefined;
             modes_paiement: string[] | undefined;
             services: string[] | undefined;
-            responsable: string | undefined;
-            logo: string | undefined;
-            documents: string[] | undefined;
+            document_outscope: string | undefined;
+            inscope: string;
             createdAt: Date;
             updatedAt: Date;
         };
     }>;
-    updateCompanyProfile(user: User, req: any, data: Partial<Company>, files: {
-        logo?: Express.Multer.File[];
-    }): Promise<{
+    updateCompanyProfile(user: User, data: Partial<Company>): Promise<{
         success: boolean;
         message: string;
         data: Company;
@@ -70,6 +65,7 @@ export declare class CompanyService {
             statutCompte: import("src/user/user.entity").StatutCompte;
             verified: boolean;
             docSet: boolean;
+            avatar: string;
             nom: string | undefined;
             description: string | undefined;
             type_entreprise: string | undefined;
@@ -79,7 +75,6 @@ export declare class CompanyService {
             statut_actuel: string | undefined;
             verfied: boolean;
             registre_commerce: string | undefined;
-            logo: string | undefined;
             responsable_nom_complet: string;
             responsable_contact: string | undefined;
             fix: string | undefined;
@@ -96,7 +91,4 @@ export declare class CompanyService {
         success?: undefined;
         data?: undefined;
     }>;
-    private saveFiles;
-    private saveFiles2;
-    private cleanupUploadedFiles;
 }

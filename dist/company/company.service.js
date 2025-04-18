@@ -17,91 +17,14 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const company_entity_1 = require("./company.entity");
-const fs = require("fs");
 const path = require("path");
-const uuid_1 = require("uuid");
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_MIME_TYPES = {
-    'application/pdf': ['.pdf'],
-    'image/jpeg': ['.jpg', '.jpeg'],
-    'image/png': ['.png'],
-    'image/jpg': ['.jpg'],
-};
-const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
-const PARTNER_DOCS_DIR = path.join(UPLOAD_DIR, 'identity');
+const upload_service_1 = require("../common/upload/upload.service");
 let CompanyService = class CompanyService {
     companyRepo;
-    constructor(companyRepo) {
+    uploadService;
+    constructor(companyRepo, uploadService) {
         this.companyRepo = companyRepo;
-        this.initializeUploadDirectories();
-    }
-    async initializeUploadDirectories() {
-        try {
-            await this.ensureDirectoryExists(UPLOAD_DIR);
-            await this.ensureDirectoryExists(PARTNER_DOCS_DIR);
-            console.log("Dossiers d'upload initialisés avec succès");
-        }
-        catch (error) {
-            console.error("Erreur lors de l'initialisation des dossiers d'upload:", error);
-        }
-    }
-    validateFile(file) {
-        if (file.size > MAX_FILE_SIZE) {
-            return {
-                isValid: false,
-                error: `Le fichier ${file.originalname} dépasse la taille maximale autorisée (5MB)`,
-            };
-        }
-        const allowedExtensions = ALLOWED_MIME_TYPES[file.mimetype];
-        if (!allowedExtensions) {
-            return {
-                isValid: false,
-                error: `Le type de fichier ${file.mimetype} n'est pas autorisé`,
-            };
-        }
-        const fileExtension = path.extname(file.originalname).toLowerCase();
-        if (!allowedExtensions.includes(fileExtension)) {
-            return {
-                isValid: false,
-                error: `L'extension ${fileExtension} n'est pas autorisée pour ce type de fichier`,
-            };
-        }
-        return { isValid: true };
-    }
-    async ensureDirectoryExists(dirPath) {
-        if (!fs.existsSync(dirPath)) {
-            await fs.promises.mkdir(dirPath, { recursive: true });
-        }
-    }
-    generateUniqueFileName(originalName) {
-        const extension = path.extname(originalName);
-        const uniqueId = (0, uuid_1.v4)();
-        return `${uniqueId}${extension}`;
-    }
-    async saveFile(file, targetDir) {
-        try {
-            const validation = this.validateFile(file);
-            if (!validation.isValid) {
-                return {
-                    success: false,
-                    error: validation.error,
-                };
-            }
-            await this.ensureDirectoryExists(targetDir);
-            const uniqueFileName = this.generateUniqueFileName(file.originalname);
-            const filePath = path.join(targetDir, uniqueFileName);
-            await fs.promises.writeFile(filePath, file.buffer);
-            return {
-                success: true,
-                filePath: path.relative(UPLOAD_DIR, filePath),
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                error: `Erreur lors de la sauvegarde du fichier: ${error.message}`,
-            };
-        }
+        this.uploadService = uploadService;
     }
     async getCompanyProfile(user) {
         const company = await this.companyRepo.findOne({
@@ -119,6 +42,7 @@ let CompanyService = class CompanyService {
                 statut: company.user.statutCompte,
                 verified: company.user.verified,
                 email: company.user.email,
+                avatar: company.user.avatar,
                 nom: company.nom,
                 description: company.description,
                 type_entreprise: company.type_entreprise,
@@ -142,24 +66,19 @@ let CompanyService = class CompanyService {
                 langues: company.langues,
                 modes_paiement: company.modes_paiement,
                 services: company.services,
-                responsable: company.responsable,
-                logo: company.logo,
-                documents: company.documents,
+                document_outscope: company.responsable,
+                inscope: company.outscope,
                 createdAt: company.createdAt,
                 updatedAt: company.updatedAt,
             },
         };
     }
-    async updateCompanyProfile(user, req, data, files) {
+    async updateCompanyProfile(user, data) {
         const company = await this.companyRepo.findOne({
             where: { user: { id: user.id } },
         });
         if (!company)
             throw new common_1.NotFoundException('Entreprise introuvable');
-        const savedFiles = await this.saveFiles(files, req);
-        if (savedFiles.logo == "") {
-            throw new common_1.BadRequestException("photo de profil requise");
-        }
         if (!data) {
             throw new common_1.BadRequestException('Aucune donnée transmise pour la mise à jour.');
         }
@@ -177,8 +96,6 @@ let CompanyService = class CompanyService {
             company.secteur = data.secteur;
         if (data.statut_actuel !== undefined)
             company.statut_actuel = data.statut_actuel;
-        if (data.verified !== undefined)
-            company.verified = data.verified;
         if (data.responsable_nom_complet !== undefined)
             company.responsable_nom_complet = data.responsable_nom_complet;
         if (data.responsable_contact !== undefined)
@@ -209,8 +126,6 @@ let CompanyService = class CompanyService {
             company.services = data.services;
         if (data.responsable !== undefined)
             company.responsable = data.responsable;
-        if (data.logo !== undefined)
-            company.logo = savedFiles.logo;
         const updated = await this.companyRepo.save(company);
         return {
             success: true,
@@ -236,7 +151,8 @@ let CompanyService = class CompanyService {
                 logo: files.logo?.[0]?.originalname,
             });
             console.log('💾 Début de sauvegarde des fichiers');
-            const savedFiles = await this.saveFiles(files, req);
+            const targetDir = path.join('uploads', `company_${company.id}`);
+            const savedFiles = await this.uploadService.saveMultipleFiles(files, targetDir);
             console.log('✅ Fichiers sauvegardés :', savedFiles);
             if (!savedFiles.registre_commerce)
                 throw new common_1.BadRequestException('document registre de commerce requis');
@@ -246,7 +162,7 @@ let CompanyService = class CompanyService {
                 company.registre_commerce = savedFiles.registre_commerce;
             }
             if (savedFiles.logo) {
-                company.logo = savedFiles.logo;
+                company.user.avatar = savedFiles.logo;
             }
             if (dto.nom)
                 company.nom = dto.nom;
@@ -287,6 +203,7 @@ let CompanyService = class CompanyService {
                     statutCompte: company.user.statutCompte,
                     verified: company.user.verified,
                     docSet: company.user.docSet,
+                    avatar: company.user.avatar,
                     nom: company.nom,
                     description: company.description,
                     type_entreprise: company.type_entreprise,
@@ -296,7 +213,6 @@ let CompanyService = class CompanyService {
                     statut_actuel: company.statut_actuel,
                     verfied: company.verified,
                     registre_commerce: company.registre_commerce,
-                    logo: company.logo,
                     responsable_nom_complet: company.responsable_nom_complet,
                     responsable_contact: company.responsable_contact,
                     fix: company.fix,
@@ -315,88 +231,12 @@ let CompanyService = class CompanyService {
             };
         }
     }
-    async saveFiles(files, req) {
-        const savedFiles = {
-            registre_commerce: '',
-            logo: '',
-        };
-        const userId = req.user.id;
-        const userDir = path.join(PARTNER_DOCS_DIR, `user_${userId}`);
-        try {
-            if (files.registre_commerce && files.registre_commerce.length > 0) {
-                const result = await this.saveFile(files.registre_commerce[0], userDir);
-                if (!result.success || !result.filePath) {
-                    throw new Error(result.error);
-                }
-                savedFiles.registre_commerce = result.filePath;
-            }
-            if (files.logo && files.logo.length > 0) {
-                const result = await this.saveFile(files.logo[0], userDir);
-                if (!result.success || !result.filePath) {
-                    throw new Error(result.error);
-                }
-                savedFiles.logo = result.filePath;
-            }
-            return savedFiles;
-        }
-        catch (error) {
-            await this.cleanupUploadedFiles(savedFiles);
-            throw error;
-        }
-    }
-    async saveFiles2(files, req) {
-        const savedFiles = {
-            registre_commerce: '',
-            logo: '',
-        };
-        const userId = req.user.id;
-        const userDir = path.join(PARTNER_DOCS_DIR, `user_${userId}`);
-        try {
-            if (files.registre_commerce && files.registre_commerce.length > 0) {
-                const result = await this.saveFile(files.registre_commerce[0], userDir);
-                if (!result.success || !result.filePath) {
-                    throw new Error(result.error);
-                }
-                savedFiles.registre_commerce = result.filePath;
-            }
-            if (files.logo && files.logo.length > 0) {
-                const result = await this.saveFile(files.logo[0], userDir);
-                if (!result.success || !result.filePath) {
-                    throw new Error(result.error);
-                }
-                savedFiles.logo = result.filePath;
-            }
-            return savedFiles;
-        }
-        catch (error) {
-            await this.cleanupUploadedFiles(savedFiles);
-            throw error;
-        }
-    }
-    async cleanupUploadedFiles(files) {
-        try {
-            if (files.registre_commerce) {
-                const fullPath = path.join(UPLOAD_DIR, files.registre_commerce);
-                if (fs.existsSync(fullPath)) {
-                    await fs.promises.unlink(fullPath);
-                }
-            }
-            if (files.logo) {
-                const fullPath = path.join(UPLOAD_DIR, files.logo);
-                if (fs.existsSync(fullPath)) {
-                    await fs.promises.unlink(fullPath);
-                }
-            }
-        }
-        catch (error) {
-            console.error('Erreur lors du nettoyage des fichiers:', error);
-        }
-    }
 };
 exports.CompanyService = CompanyService;
 exports.CompanyService = CompanyService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(company_entity_1.Company)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        upload_service_1.UploadService])
 ], CompanyService);
 //# sourceMappingURL=company.service.js.map

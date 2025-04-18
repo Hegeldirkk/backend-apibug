@@ -1,4 +1,5 @@
 import { User } from '../user/user.entity';
+import { Program } from 'src/programs/program.entity';
 export declare class Company {
     id: string;
     nom?: string;
@@ -15,7 +16,6 @@ export declare class Company {
     adresse?: string;
     urlSite?: string;
     num_identification?: string;
-    user: User;
     pushToken?: string;
     registre_commerce?: string;
     date_creation?: Date;
@@ -28,8 +28,9 @@ export declare class Company {
     modes_paiement?: string[];
     services?: string[];
     responsable?: string;
-    logo?: string;
-    documents?: string[];
+    outscope: string;
+    user: User;
+    programs: Program[];
     createdAt: Date;
     updatedAt: Date;
 }

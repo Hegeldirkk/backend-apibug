@@ -17,6 +17,7 @@ export declare class User {
     email: string;
     numeroTelephone: string;
     password: string;
+    avatar: string;
     otp_code: string;
     otp_expire_at: Date;
     verified: boolean;

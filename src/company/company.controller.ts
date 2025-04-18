@@ -57,16 +57,11 @@ export class CompanyController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 1 }]))
   async updateProfile(
     @Request() req,
     @Body() body: UpdateProfileDto,
-    @UploadedFiles()
-    files: {
-      logo?: Express.Multer.File[];
-    },
   ) {
-    return this.companyService.updateCompanyProfile(req.user, req, body, files);
+    return this.companyService.updateCompanyProfile(req.user, req);
   }
 
   // @Get()
