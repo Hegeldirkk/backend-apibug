@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Company } from 'src/company/company.entity';
+import { Hacker } from 'src/hacker/hacker.entity';
 import {
   Entity,
   Column,
@@ -102,4 +103,7 @@ export class User {
   // Relations
   @OneToOne(() => Company, (company) => company.user)
   company: Company;
+
+  @OneToOne(() => Hacker, (hacker) => hacker.user)
+  hacker: Hacker;
 }

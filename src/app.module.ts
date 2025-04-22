@@ -3,14 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Company } from './company/company.entity';
-import { User } from './user/user.entity';
+
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
-import { Hacker } from './hacker/hacker.entity';
-import { Program } from './programs/program.entity';
+
 import { ProgramModule } from './programs/program.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -29,7 +28,8 @@ import { ProgramModule } from './programs/program.module';
       synchronize: true, // ❗ À désactiver en prod
     }),
     AuthModule,
-    ProgramModule
+    ProgramModule,
+    ReportModule
   ],
   controllers: [AppController],
   providers: [AppService],

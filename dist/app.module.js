@@ -16,6 +16,7 @@ const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const config_1 = require("@nestjs/config");
 const program_module_1 = require("./programs/program.module");
+const report_module_1 = require("./report/report.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,7 +38,8 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
             }),
             auth_module_1.AuthModule,
-            program_module_1.ProgramModule
+            program_module_1.ProgramModule,
+            report_module_1.ReportModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

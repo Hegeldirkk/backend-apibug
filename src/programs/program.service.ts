@@ -41,7 +41,7 @@ export class ProgramService {
   
     const programs = await this.programRepo.find({
       where: { company: { id: company.id } },
-      relations: ['company', 'company.user'],
+      relations: ['company', 'company.user', 'reports'],
       order: { createdAt: 'DESC' },
     });
   

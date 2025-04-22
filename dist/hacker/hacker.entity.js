@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Hacker = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../user/user.entity");
+const report_entity_1 = require("../report/report.entity");
 let Hacker = class Hacker {
     id;
     nom;
@@ -32,6 +33,7 @@ let Hacker = class Hacker {
     niveau;
     infoPiece;
     user;
+    reports;
     createdAt;
     updatedAt;
 };
@@ -101,7 +103,11 @@ __decorate([
     __metadata("design:type", String)
 ], Hacker.prototype, "pushToken", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['Novice', 'Intermediaire', 'Expert'], nullable: true }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['Novice', 'Intermediaire', 'Expert'],
+        nullable: true,
+    }),
     __metadata("design:type", String)
 ], Hacker.prototype, "niveau", void 0);
 __decorate([
@@ -113,6 +119,10 @@ __decorate([
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", user_entity_1.User)
 ], Hacker.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.hacker),
+    __metadata("design:type", Array)
+], Hacker.prototype, "reports", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

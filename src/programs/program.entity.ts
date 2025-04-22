@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Company } from '../company/company.entity';
+import { Report } from 'src/report/report.entity';
 
 export enum ProgramStatus {
   NOUVEAU = 'nouveau',
@@ -52,10 +54,14 @@ export class Program {
     raison: string;
   }>;
 
+  //relations
   @ManyToOne(() => Company, (company) => company.programs, {
     onDelete: 'CASCADE',
   })
   company: Company;
+
+  @OneToMany(() => Report, (report) => report.program)
+  reports: Report[];
 
   @Column({ nullable: true })
   markdown: string;

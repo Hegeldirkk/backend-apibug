@@ -1,4 +1,5 @@
 import { User } from '../user/user.entity';
+import { Report } from 'src/report/report.entity';
 export declare class Hacker {
     id: string;
     nom: string;
@@ -33,6 +34,7 @@ export declare class Hacker {
         versoImage: string;
     };
     user: User;
+    reports: Report[];
     createdAt: Date;
     updatedAt: Date;
 }

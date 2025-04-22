@@ -57,12 +57,7 @@ export class CompanyController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile')
-  async updateProfile(
-    @Request() req,
-    @Body() body: UpdateProfileDto,
-  ) {
+  async updateProfile(@Request() req, @Body() body: UpdateProfileDto) {
     return this.companyService.updateCompanyProfile(req.user, req);
   }
-
-
 }

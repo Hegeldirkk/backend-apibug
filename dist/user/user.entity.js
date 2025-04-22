@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.StatutCompte = exports.UserRole = void 0;
 const class_transformer_1 = require("class-transformer");
 const company_entity_1 = require("../company/company.entity");
+const hacker_entity_1 = require("../hacker/hacker.entity");
 const typeorm_1 = require("typeorm");
 var UserRole;
 (function (UserRole) {
@@ -48,6 +49,7 @@ let User = class User {
     createdAt;
     updatedAt;
     company;
+    hacker;
 };
 exports.User = User;
 __decorate([
@@ -144,6 +146,10 @@ __decorate([
     (0, typeorm_1.OneToOne)(() => company_entity_1.Company, (company) => company.user),
     __metadata("design:type", company_entity_1.Company)
 ], User.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => hacker_entity_1.Hacker, (hacker) => hacker.user),
+    __metadata("design:type", hacker_entity_1.Hacker)
+], User.prototype, "hacker", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('users')
 ], User);

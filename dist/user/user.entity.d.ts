@@ -1,4 +1,5 @@
 import { Company } from 'src/company/company.entity';
+import { Hacker } from 'src/hacker/hacker.entity';
 export declare enum UserRole {
     SUPERADMIN = "superadmin",
     ADMIN = "admin",
@@ -32,4 +33,5 @@ export declare class User {
     createdAt: Date;
     updatedAt: Date;
     company: Company;
+    hacker: Hacker;
 }
