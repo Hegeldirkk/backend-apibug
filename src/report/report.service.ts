@@ -10,6 +10,7 @@ import { CreateReportDto } from './dto/create-report.dto';
 import { UploadService } from 'src/common/upload/upload.service';
 import * as path from 'path';
 import { UpdateReportStatusDto } from './dto/update-report-status.dto';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class ReportService {
@@ -19,6 +20,9 @@ export class ReportService {
 
     @InjectRepository(Hacker)
     private hackerRepo: Repository<Hacker>,
+
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
 
     @InjectRepository(Program)
     private programRepo: Repository<Program>,
@@ -65,7 +69,11 @@ export class ReportService {
       preuves?: Express.Multer.File[];
     },
   ): Promise<any> {
-    const hacker = await this.hackerRepo.findOne({ where: { id: hackerId } });
+    const hacker = await this.userRepo.findOne({
+      where: { id: hackerId },
+      relations: ['hacker'],
+    });
+    
     if (!hacker) throw new NotFoundException('Hacker non trouvé');
 
     const program = await this.programRepo.findOne({
@@ -115,7 +123,7 @@ export class ReportService {
     report.titre = dto.titre;
     report.description = dto.description;
     report.markdown = markdownUrl;
-    report.hacker = hacker;
+    report.hacker = hacker.hacker;
     report.program = program;
 
     // Champs optionnels avec fallback

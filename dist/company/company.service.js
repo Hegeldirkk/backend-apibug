@@ -19,14 +19,23 @@ const typeorm_2 = require("typeorm");
 const company_entity_1 = require("./company.entity");
 const update_company_dto_1 = require("./dto/update-company.dto");
 const path = require("path");
+const user_entity_1 = require("../user/user.entity");
 const upload_service_1 = require("../common/upload/upload.service");
 const response_transformer_service_1 = require("../common/services/response-transformer.service");
+const program_entity_1 = require("../programs/program.entity");
+const report_entity_1 = require("../report/report.entity");
 let CompanyService = class CompanyService {
     companyRepo;
+    programRepo;
+    reportRepo;
+    userRepo;
     uploadService;
     responseTransformer;
-    constructor(companyRepo, uploadService, responseTransformer) {
+    constructor(companyRepo, programRepo, reportRepo, userRepo, uploadService, responseTransformer) {
         this.companyRepo = companyRepo;
+        this.programRepo = programRepo;
+        this.reportRepo = reportRepo;
+        this.userRepo = userRepo;
         this.uploadService = uploadService;
         this.responseTransformer = responseTransformer;
     }
@@ -177,6 +186,54 @@ let CompanyService = class CompanyService {
             };
         }
     }
+    async getStatistics(userId) {
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
+            relations: ['company'],
+        });
+        if (!user)
+            throw new common_1.NotFoundException('Utilisateur introuvable');
+        if (!user.company)
+            throw new common_1.NotFoundException('Entreprise introuvable');
+        const totalActivePrograms = await this.programRepo.count({
+            where: { company: { id: user.company.id }, statut: program_entity_1.ProgramStatus.ACTIF },
+        });
+        const pendingReports = await this.reportRepo.count({
+            where: {
+                program: { company: { id: user.company.id } },
+                statut: report_entity_1.ReportStatus.EN_ATTENTE,
+            },
+        });
+        const hackerCount = await this.reportRepo
+            .createQueryBuilder('report')
+            .innerJoin('report.program', 'program')
+            .innerJoin('program.company', 'company')
+            .where('company.id = :companyId', { companyId: user.company.id })
+            .andWhere('report.hackerId IS NOT NULL')
+            .select('COUNT(DISTINCT report.hackerId)', 'count')
+            .getRawOne();
+        const totalHackers = parseInt(hackerCount.count, 10);
+        const vulnerabilities = await this.reportRepo.count({
+            where: {
+                program: {
+                    company: {
+                        id: user.company.id,
+                    },
+                },
+                statut: report_entity_1.ReportStatus.VALIDE,
+            },
+        });
+        return {
+            success: true,
+            message: 'Statistiques récupérées avec succès',
+            data: {
+                nombreProgrammesActifs: totalActivePrograms,
+                nombreRapportsEnAttente: pendingReports,
+                nombreHackers: totalHackers,
+                nombreVulnerabilites: vulnerabilities,
+            },
+        };
+    }
 };
 exports.CompanyService = CompanyService;
 __decorate([
@@ -188,7 +245,13 @@ __decorate([
 exports.CompanyService = CompanyService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(company_entity_1.Company)),
+    __param(1, (0, typeorm_1.InjectRepository)(program_entity_1.Program)),
+    __param(2, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         upload_service_1.UploadService,
         response_transformer_service_1.ResponseTransformerService])
 ], CompanyService);

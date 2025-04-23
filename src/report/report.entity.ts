@@ -7,9 +7,11 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Hacker } from 'src/hacker/hacker.entity';
 import { Program } from 'src/programs/program.entity';
+import { ReportMessage } from 'src/report-message/report-message.entity';
 
 export enum ReportStatus {
   EN_ATTENTE = 'en_attente',
@@ -53,6 +55,9 @@ export class Report {
     onDelete: 'CASCADE',
   })
   program: Program;
+
+  @OneToMany(() => ReportMessage, (msg) => msg.report)
+  messages: ReportMessage[];
 
   @CreateDateColumn()
   createdAt: Date;

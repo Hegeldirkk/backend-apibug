@@ -44,13 +44,25 @@ let AuthService = class AuthService {
     async sendConfirmationEmail(user) {
         const ait = 0;
         const response = await this.confirmationTokenService.generateConfirmationLink(user.id, user.email, user.role, ait);
-        console.log('Lien de confirmation envoyé :', response);
         return response;
     }
     async registerCompany(dto) {
+        const existing = await this.userRepo.findOne({
+            where: { email: dto.email, verified: false },
+        });
+        console.log('EXISTING:', existing);
+        if (existing) {
+            await this.sendConfirmationEmail(existing);
+            return {
+                success: false,
+                message: 'Email déjà utilisé, un mail de confirmation a été renvoyé',
+            };
+        }
         const user = await this.createUserBase(dto, user_entity_1.UserRole.ENTREPRISE);
         const newCompany = this.companyRepo.create({ user });
         const company = await this.companyRepo.save(newCompany);
+        user.company = company;
+        await this.userRepo.save(user);
         await this.sendConfirmationEmail(company.user);
         return {
             success: true,
@@ -59,10 +71,23 @@ let AuthService = class AuthService {
         };
     }
     async registerHacker(dto) {
+        const existing = await this.userRepo.findOne({
+            where: { email: dto.email, verified: false },
+        });
+        console.log('EXISTING:', existing);
+        if (existing) {
+            await this.sendConfirmationEmail(existing);
+            return {
+                success: false,
+                message: 'Email déjà utilisé, un mail de confirmation a été renvoyé',
+            };
+        }
         const user = await this.createUserBase(dto, user_entity_1.UserRole.HACKER);
         const hacker = this.hackerRepo.create({ user });
         console.log('HACKER OBJ:', hacker);
         await this.hackerRepo.save(hacker);
+        user.hacker = hacker;
+        await this.userRepo.save(user);
         await this.sendConfirmationEmail(user);
         return {
             success: true,

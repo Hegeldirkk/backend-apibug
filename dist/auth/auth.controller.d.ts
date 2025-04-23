@@ -8,9 +8,17 @@ export declare class AuthController {
     registerHacker(dto: RegisterDto): Promise<{
         success: boolean;
         message: string;
+        data?: undefined;
+    } | {
+        success: boolean;
+        message: string;
         data: Record<string, any>;
     }>;
     registerCompany(dto: RegisterDto): Promise<{
+        success: boolean;
+        message: string;
+        data?: undefined;
+    } | {
         success: boolean;
         message: string;
         data: Record<string, any>;

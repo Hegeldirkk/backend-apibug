@@ -17,10 +17,14 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./user.entity");
+const upload_service_1 = require("../common/upload/upload.service");
+const path = require("path");
 let UserService = class UserService {
     userRepo;
-    constructor(userRepo) {
+    uploadService;
+    constructor(userRepo, uploadService) {
         this.userRepo = userRepo;
+        this.uploadService = uploadService;
     }
     async findById(id) {
         return this.userRepo.findOne({ where: { id } });
@@ -104,11 +108,32 @@ let UserService = class UserService {
             },
         };
     }
+    async updateSelfie(id, files) {
+        const user = await this.userRepo.findOne({ where: { id } });
+        if (!user) {
+            throw new common_1.NotFoundException('Utilisateur non trouvé');
+        }
+        if (files.logo && Array.isArray(files.logo) && files.logo.length > 0) {
+            const targetDir = path.join('uploads', 'users', 'avatars');
+            const savedFile = await this.uploadService.saveFile(files.logo[0], targetDir);
+            if (!savedFile.success || !savedFile.filePath) {
+                throw new common_1.InternalServerErrorException("Échec de l'upload de l'avatar");
+            }
+            user.avatar = savedFile.filePath;
+        }
+        const updatedUser = await this.userRepo.save(user);
+        return {
+            success: true,
+            message: 'Selfie mis à jour avec succès',
+            data: updatedUser,
+        };
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        upload_service_1.UploadService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

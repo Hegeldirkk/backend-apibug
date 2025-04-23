@@ -1,13 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './user.entity';
-
+import { UploadService } from 'src/common/upload/upload.service';
+import * as path from 'path';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly uploadService: UploadService,
   ) {}
 
   async findById(id: string) {
@@ -19,15 +25,15 @@ export class UserService {
       where: { id: user.id },
       relations: ['company', 'hacker', 'admin'], // Ajoute d'autres relations si besoin
     });
-  
+
     if (!fullUser) throw new NotFoundException('Utilisateur non trouvé');
-  
+
     const { id, email, role, statutCompte, createdAt, docSet } = fullUser;
-  
+
     // === ENTREPRISE ===
     if (role === UserRole.ENTREPRISE) {
       const company = fullUser.company;
-  
+
       return {
         role: 'company',
         data: {
@@ -64,7 +70,7 @@ export class UserService {
         },
       };
     }
-  
+
     // === ADMIN / SUPERADMIN ===
     if (role === UserRole.ADMIN || role === UserRole.SUPERADMIN) {
       return {
@@ -78,7 +84,7 @@ export class UserService {
         },
       };
     }
-  
+
     // === HACKER ===
     if (role === UserRole.HACKER) {
       return {
@@ -92,7 +98,7 @@ export class UserService {
         },
       };
     }
-  
+
     // === UNKNOWN ROLE (fallback) ===
     return {
       role: 'unknown',
@@ -103,7 +109,42 @@ export class UserService {
       },
     };
   }
-  
+
+  async updateSelfie(
+    id: string,
+    files: {
+      logo?: Express.Multer.File[];
+    },
+  ): Promise<{ success: boolean; message: string; data: User }> {
+    const user = await this.userRepo.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (files.logo && Array.isArray(files.logo) && files.logo.length > 0) {
+      const targetDir = path.join('uploads', 'users', 'avatars');
+
+      const savedFile = await this.uploadService.saveFile(
+        files.logo[0],
+        targetDir,
+      );
+
+      if (!savedFile.success || !savedFile.filePath) {
+        throw new InternalServerErrorException("Échec de l'upload de l'avatar");
+      }
+
+      user.avatar = savedFile.filePath;
+    }
+
+    const updatedUser = await this.userRepo.save(user);
+
+    return {
+      success: true,
+      message: 'Selfie mis à jour avec succès',
+      data: updatedUser,
+    };
+  }
 
   // findAll(): Promise<User[]> {
   //   return this.userRepo.find();

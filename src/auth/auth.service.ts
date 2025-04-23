@@ -48,17 +48,33 @@ export class AuthService {
         user.role,
         ait,
       );
-    console.log('Lien de confirmation envoyé :', response);
     return response;
   }
 
   //creer un utilisateur de type entreprise
   async registerCompany(dto: RegisterDto) {
+    const existing = await this.userRepo.findOne({
+      where: { email: dto.email, verified: false },
+    });
+    console.log('EXISTING:', existing); // 👀 Tu dois voir un objet ici
+
+    if (existing) {
+      await this.sendConfirmationEmail(existing);
+
+      return {
+        success: false,
+        message: 'Email déjà utilisé, un mail de confirmation a été renvoyé',
+      };
+    }
+
     const user = await this.createUserBase(dto, UserRole.ENTREPRISE);
 
     const newCompany = this.companyRepo.create({ user });
 
     const company = await this.companyRepo.save(newCompany);
+
+    user.company = company; // Associer l'entreprise à l'utilisateur
+    await this.userRepo.save(user); // Enregistrer l'utilisateur avec la référence à l'entreprise
 
     await this.sendConfirmationEmail(company.user);
 
@@ -71,12 +87,28 @@ export class AuthService {
 
   //creer un utilisateur de type hacker
   async registerHacker(dto: RegisterDto) {
+    const existing = await this.userRepo.findOne({
+      where: { email: dto.email, verified: false },
+    });
+    console.log('EXISTING:', existing); // 👀 Tu dois voir un objet ici
+
+    if (existing) {
+      await this.sendConfirmationEmail(existing);
+
+      return {
+        success: false,
+        message: 'Email déjà utilisé, un mail de confirmation a été renvoyé',
+      };
+    }
+
     const user = await this.createUserBase(dto, UserRole.HACKER);
 
     const hacker = this.hackerRepo.create({ user });
     console.log('HACKER OBJ:', hacker); // 👀 Tu dois voir un objet ici
     await this.hackerRepo.save(hacker);
 
+    user.hacker = hacker; // Associer le hacker à l'utilisateur
+    await this.userRepo.save(user); // Enregistrer l'utilisateur avec la référence au hacker
     await this.sendConfirmationEmail(user);
 
     return {

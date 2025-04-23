@@ -8,9 +8,10 @@ import { Report } from './report.entity';
 import { Hacker } from 'src/hacker/hacker.entity';
 import { Program } from 'src/programs/program.entity';
 import { UploadModule } from 'src/common/upload/upload.module';
+import { User } from 'src/user/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Report, Hacker, Program]),
+  imports: [TypeOrmModule.forFeature([Report, Hacker, Program, User]),
   UploadModule
 ],
   controllers: [ReportController],

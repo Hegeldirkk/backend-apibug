@@ -17,6 +17,7 @@ const path_1 = require("path");
 const config_1 = require("@nestjs/config");
 const program_module_1 = require("./programs/program.module");
 const report_module_1 = require("./report/report.module");
+const hacker_module_1 = require("./hacker/hacker.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -39,7 +40,8 @@ exports.AppModule = AppModule = __decorate([
             }),
             auth_module_1.AuthModule,
             program_module_1.ProgramModule,
-            report_module_1.ReportModule
+            report_module_1.ReportModule,
+            hacker_module_1.HackerModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

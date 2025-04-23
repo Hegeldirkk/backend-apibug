@@ -22,9 +22,17 @@ export declare class AuthService {
     registerCompany(dto: RegisterDto): Promise<{
         success: boolean;
         message: string;
+        data?: undefined;
+    } | {
+        success: boolean;
+        message: string;
         data: Record<string, any>;
     }>;
     registerHacker(dto: RegisterDto): Promise<{
+        success: boolean;
+        message: string;
+        data?: undefined;
+    } | {
         success: boolean;
         message: string;
         data: Record<string, any>;

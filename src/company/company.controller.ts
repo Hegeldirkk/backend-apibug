@@ -60,4 +60,12 @@ export class CompanyController {
   async updateProfile(@Request() req, @Body() body: UpdateProfileDto) {
     return this.companyService.updateCompanyProfile(req.user, req);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('stats')
+  async getStats(@Request() req, companyId: string) {
+    return this.companyService.getStatistics(req.user.id);
+  }
+
+
 }

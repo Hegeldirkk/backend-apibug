@@ -1,8 +1,10 @@
 import { Repository } from 'typeorm';
 import { User, UserRole } from './user.entity';
+import { UploadService } from 'src/common/upload/upload.service';
 export declare class UserService {
     private readonly userRepo;
-    constructor(userRepo: Repository<User>);
+    private readonly uploadService;
+    constructor(userRepo: Repository<User>, uploadService: UploadService);
     findById(id: string): Promise<User | null>;
     getProfileByRole(user: User): Promise<{
         role: string;
@@ -61,5 +63,12 @@ export declare class UserService {
             statutCompte?: undefined;
             createdAt?: undefined;
         };
+    }>;
+    updateSelfie(id: string, files: {
+        logo?: Express.Multer.File[];
+    }): Promise<{
+        success: boolean;
+        message: string;
+        data: User;
     }>;
 }

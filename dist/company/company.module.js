@@ -15,12 +15,14 @@ const company_controller_1 = require("./company.controller");
 const common_module_1 = require("../common/common.module");
 const program_entity_1 = require("../programs/program.entity");
 const upload_module_1 = require("../common/upload/upload.module");
+const report_entity_1 = require("../report/report.entity");
+const user_entity_1 = require("../user/user.entity");
 let CompanyModule = class CompanyModule {
 };
 exports.CompanyModule = CompanyModule;
 exports.CompanyModule = CompanyModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([company_entity_1.Company, program_entity_1.Program]), common_module_1.CommonModule, upload_module_1.UploadModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([company_entity_1.Company, program_entity_1.Program, report_entity_1.Report, user_entity_1.User]), common_module_1.CommonModule, upload_module_1.UploadModule],
         providers: [company_service_1.CompanyService],
         controllers: [company_controller_1.CompanyController],
         exports: [typeorm_1.TypeOrmModule],

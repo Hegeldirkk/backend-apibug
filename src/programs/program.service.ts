@@ -4,12 +4,11 @@ import { Repository } from 'typeorm';
 import { Program } from './program.entity';
 import { Company } from '../company/company.entity';
 import { CreateProgramDto } from './dto/create-program.dto';
-import * as fs from 'fs';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { UploadService } from 'src/common/upload/upload.service';
 import { UpdateProgramStatutDto } from './dto/update-statut-program.dto';
 import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class ProgramService {
@@ -20,11 +19,45 @@ export class ProgramService {
     @InjectRepository(Company)
     private companyRepo: Repository<Company>,
 
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+
     private readonly uploadService: UploadService,
 
     private readonly responseTransformer: ResponseTransformerService,
   ) {}
 
+  // Pour récupérer les programmes d'un hacker
+  async getProgramsWithReportsAndHackers(req: any) {
+    const user = await this.userRepo.findOne({
+      where: { id: req.user.id },
+      relations: ['company'],
+    });
+  
+    if (!user || !user.company) {
+      throw new NotFoundException("Entreprise non trouvée pour cet utilisateur");
+    }
+  
+    const programs = await this.programRepo.find({
+      where: {
+        company: { id: user.company.id },
+      },
+      relations: [
+        'reports',
+        'reports.hacker',
+        'reports.hacker.user',
+      ],
+      order: { createdAt: 'DESC' },
+    });
+  
+    
+    return {
+      success: true,
+      message: 'Liste des programmes avec rapports et hackers récupérée avec succès',
+      data: programs,
+    };
+  }
+  
   // Pour récupérer les programmes d'une entreprise
   async getProgramsByCompany(req: any) {
     const user = req.user;

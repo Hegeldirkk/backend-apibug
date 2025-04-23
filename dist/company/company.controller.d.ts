@@ -30,4 +30,14 @@ export declare class CompanyController {
         message: string;
         data: Record<string, any>;
     }>;
+    getStats(req: any, companyId: string): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            nombreProgrammesActifs: number;
+            nombreRapportsEnAttente: number;
+            nombreHackers: number;
+            nombreVulnerabilites: number;
+        };
+    }>;
 }

@@ -12,12 +12,21 @@ import * as path from 'path';
 import { User } from 'src/user/user.entity';
 import { UploadService } from 'src/common/upload/upload.service';
 import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
+import { Program, ProgramStatus } from 'src/programs/program.entity';
+import { Report, ReportStatus } from 'src/report/report.entity';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepo: Repository<Company>,
+    @InjectRepository(Program)
+    private readonly programRepo: Repository<Program>,
+    @InjectRepository(Report)
+    private readonly reportRepo: Repository<Report>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+
     private readonly uploadService: UploadService,
     private readonly responseTransformer: ResponseTransformerService,
   ) {}
@@ -188,5 +197,59 @@ export class CompanyService {
         message: 'Erreur interne du serveur',
       };
     }
+  }
+
+  async getStatistics(userId: string) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['company'],
+    });
+    if (!user) throw new NotFoundException('Utilisateur introuvable');
+
+    if (!user.company) throw new NotFoundException('Entreprise introuvable');
+
+    const totalActivePrograms = await this.programRepo.count({
+      where: { company: { id: user.company.id }, statut: ProgramStatus.ACTIF },
+    });
+
+    const pendingReports = await this.reportRepo.count({
+      where: {
+        program: { company: { id: user.company.id } },
+        statut: ReportStatus.EN_ATTENTE,
+      },
+    });
+
+    const hackerCount = await this.reportRepo
+      .createQueryBuilder('report')
+      .innerJoin('report.program', 'program')
+      .innerJoin('program.company', 'company')
+      .where('company.id = :companyId', { companyId: user.company.id })
+      .andWhere('report.hackerId IS NOT NULL')
+      .select('COUNT(DISTINCT report.hackerId)', 'count')
+      .getRawOne();
+
+    const totalHackers = parseInt(hackerCount.count, 10);
+
+    const vulnerabilities = await this.reportRepo.count({
+      where: {
+        program: {
+          company: {
+            id: user.company.id,
+          },
+        },
+        statut: ReportStatus.VALIDE,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Statistiques récupérées avec succès',
+      data: {
+        nombreProgrammesActifs: totalActivePrograms,
+        nombreRapportsEnAttente: pendingReports,
+        nombreHackers: totalHackers,
+        nombreVulnerabilites: vulnerabilities,
+      },
+    };
   }
 }

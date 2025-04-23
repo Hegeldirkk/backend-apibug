@@ -27,6 +27,12 @@ export class ProgramController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('by/hacker')
+  async getProgramsByHacker(@Request() req) {
+    return this.programService.getProgramsWithReportsAndHackers(req);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('all')
   async getAllPrograms(@Request() req) {
     return this.programService.getAllPrograms(req);

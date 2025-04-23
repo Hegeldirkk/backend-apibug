@@ -33,6 +33,9 @@ let CompanyController = class CompanyController {
     async updateProfile(req, body) {
         return this.companyService.updateCompanyProfile(req.user, req);
     }
+    async getStats(req, companyId) {
+        return this.companyService.getStatistics(req.user.id);
+    }
 };
 exports.CompanyController = CompanyController;
 __decorate([
@@ -66,6 +69,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_company_profile_dto_1.UpdateProfileDto]),
     __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('stats'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], CompanyController.prototype, "getStats", null);
 exports.CompanyController = CompanyController = __decorate([
     (0, common_1.Controller)('companies'),
     __metadata("design:paramtypes", [company_service_1.CompanyService])
