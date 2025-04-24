@@ -159,7 +159,7 @@ export class AdminService {
     // Dernières entreprises
     const latestCompanies = await this.companyRepo
       .createQueryBuilder('company')
-      .leftJoinAndSelect('company.programs', 'program', )
+      .leftJoinAndSelect('company.programs', 'program')
       .leftJoinAndSelect('company.user', 'user') // 👈 JOIN de la relation user
       .orderBy('company.createdAt', 'DESC')
       .take(5)
@@ -219,27 +219,31 @@ export class AdminService {
     }));
 
     return {
-      hackers: {
-        total: totalHackers,
-        thisMonth: hackersThisMonth,
-        lastMonth: hackersLastMonth,
-        growth: hackerGrowth,
-        latest: latestHackers,
+      success: true,
+      message: 'Statistiques récupérées avec succès',
+      data: {
+        hackers: {
+          total: totalHackers,
+          thisMonth: hackersThisMonth,
+          lastMonth: hackersLastMonth,
+          growth: hackerGrowth,
+          latest: latestHackers,
+        },
+        companies: {
+          total: totalCompanies,
+          thisMonth: companiesThisMonth,
+          lastMonth: companiesLastMonth,
+          growth: companyGrowth,
+          latest: companiesWithPrograms,
+        },
+        programs: {
+          totalActive: totalActivePrograms,
+          thisMonth: programsThisMonth,
+          lastMonth: programsLastMonth,
+          growth: programGrowth,
+        },
+        monthlyRegistrations,
       },
-      companies: {
-        total: totalCompanies,
-        thisMonth: companiesThisMonth,
-        lastMonth: companiesLastMonth,
-        growth: companyGrowth,
-        latest: companiesWithPrograms,
-      },
-      programs: {
-        totalActive: totalActivePrograms,
-        thisMonth: programsThisMonth,
-        lastMonth: programsLastMonth,
-        growth: programGrowth,
-      },
-      monthlyRegistrations,
     };
   }
 }
