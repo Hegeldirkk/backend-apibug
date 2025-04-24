@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Admin } from 'src/admin/admin.entity';
 import { Company } from 'src/company/company.entity';
 import { Hacker } from 'src/hacker/hacker.entity';
 import {
@@ -106,4 +107,7 @@ export class User {
 
   @OneToOne(() => Hacker, (hacker) => hacker.user)
   hacker: Hacker;
+
+  @OneToOne(() => Admin, (admin) => admin.user)
+  admin: Admin;
 }

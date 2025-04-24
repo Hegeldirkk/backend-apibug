@@ -10,4 +10,5 @@ export declare class ConfirmationTokenService {
     private userRepo;
     constructor(jwtService: JwtService, sendEmailService: SendEmailService, configService: ConfigService, userRepo: Repository<User>);
     generateConfirmationLink(userId: string, email: string, role: UserRole, ait: number): Promise<void>;
+    sendAdminAccountCreatedEmail(email: string, password: string): Promise<void>;
 }

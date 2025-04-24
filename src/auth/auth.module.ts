@@ -13,10 +13,11 @@ import { ConfirmationTokenService } from 'src/common/confirmation-token.service'
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserModule } from 'src/user/user.module';
+import { Admin } from 'src/admin/admin.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Company, Hacker]),
+    TypeOrmModule.forFeature([User, Company, Hacker, Admin]),
     CompanyModule,
     ConfigModule.forRoot(),
     JwtModule.registerAsync({

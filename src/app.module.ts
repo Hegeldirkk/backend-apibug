@@ -11,6 +11,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ProgramModule } from './programs/program.module';
 import { ReportModule } from './report/report.module';
 import { HackerModule } from './hacker/hacker.module';
+import { InitModule } from './init/init.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -31,7 +33,9 @@ import { HackerModule } from './hacker/hacker.module';
     AuthModule,
     ProgramModule,
     ReportModule,
-    HackerModule
+    HackerModule,
+    InitModule,
+    AdminModule
   ],
   controllers: [AppController],
   providers: [AppService],

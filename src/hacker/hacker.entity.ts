@@ -30,9 +30,6 @@ export class Hacker {
   sexe: 'M' | 'F';
 
   @Column({ nullable: true })
-  email: string;
-
-  @Column({ nullable: true })
   adresse: string;
 
   @Column({ nullable: true })
@@ -42,25 +39,19 @@ export class Hacker {
   dateNaissance: Date;
 
   @Column({ nullable: true })
-  pays: string;
-
-  @Column({ nullable: true })
   siteWeb: string;
 
   @Column({ type: 'text', nullable: true })
   aPropos: string;
 
+  @Column({ default: 0 })
+  points: number;
+
   @Column({ type: 'json', nullable: true })
   reseauxSociaux: { nom: string; lien: string }[];
 
-  @Column({ nullable: true })
-  photo: string;
-
   @Column({ default: true })
   publique: boolean;
-
-  @Column({ nullable: true })
-  pushToken: string;
 
   @Column({
     type: 'enum',
@@ -68,20 +59,6 @@ export class Hacker {
     nullable: true,
   })
   niveau: 'Novice' | 'Intermediaire' | 'Expert';
-
-  @Column({ type: 'json', nullable: true })
-  infoPiece: {
-    numeroPiece: string;
-    dateExpiration: Date;
-    profession: string;
-    nationalite: string;
-    nomPere: string;
-    lieuNaissance: string;
-    nomMere: string;
-    numeroIdentification: string;
-    rectoImage: string;
-    versoImage: string;
-  };
 
   // Relations
   @OneToOne(() => User)

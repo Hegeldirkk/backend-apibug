@@ -6,6 +6,8 @@ import { UserRole } from 'src/user/user.entity';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ChangePasswordDto } from './dto/update-password.dto';
 import { Response } from 'express';
+import { LoginAdminDto } from './dto/login-admin.dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,15 +24,22 @@ export class AuthController {
     return this.authService.registerCompany(dto);
   }
 
-  // @Post('register/admin')
-  // async registerAdmin(@Body() dto: RegisterDto) {
-  //   const role = UserRole.ADMIN
-  //   return this.authService.register(dto, role);
-  // }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('register/admin')
+  async registerAdmin(@Request() req, @Body() dto: RegisterAdminDto) {
+    const role = UserRole.ADMIN
+    return this.authService.registerAdmin(req, dto, role);
+  }
 
   @Post('login')
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('login/admin')
+  async loginAdmin(@Body() dto: LoginAdminDto) {
+    return this.authService.loginAdmin(dto);
   }
 
   @Post('verify/:token')

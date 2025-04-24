@@ -22,13 +22,14 @@ const confirmation_token_service_1 = require("../common/confirmation-token.servi
 const jwt_strategy_1 = require("./jwt.strategy");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 const user_module_1 = require("../user/user.module");
+const admin_entity_1 = require("../admin/admin.entity");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, company_entity_1.Company, hacker_entity_1.Hacker]),
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, company_entity_1.Company, hacker_entity_1.Hacker, admin_entity_1.Admin]),
             company_module_1.CompanyModule,
             config_1.ConfigModule.forRoot(),
             jwt_1.JwtModule.registerAsync({

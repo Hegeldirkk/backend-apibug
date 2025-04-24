@@ -19,19 +19,15 @@ let Hacker = class Hacker {
     prenom;
     pseudo;
     sexe;
-    email;
     adresse;
     contact;
     dateNaissance;
-    pays;
     siteWeb;
     aPropos;
+    points;
     reseauxSociaux;
-    photo;
     publique;
-    pushToken;
     niveau;
-    infoPiece;
     user;
     reports;
     createdAt;
@@ -61,10 +57,6 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Hacker.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
 ], Hacker.prototype, "adresse", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -77,31 +69,23 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Hacker.prototype, "pays", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
 ], Hacker.prototype, "siteWeb", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], Hacker.prototype, "aPropos", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Hacker.prototype, "points", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'json', nullable: true }),
     __metadata("design:type", Array)
 ], Hacker.prototype, "reseauxSociaux", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Hacker.prototype, "photo", void 0);
-__decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Hacker.prototype, "publique", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Hacker.prototype, "pushToken", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -110,10 +94,6 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Hacker.prototype, "niveau", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
-    __metadata("design:type", Object)
-], Hacker.prototype, "infoPiece", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User),
     (0, typeorm_1.JoinColumn)(),

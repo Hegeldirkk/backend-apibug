@@ -46,4 +46,27 @@ export class ConfirmationTokenService {
       throw new BadRequestException('Erreur lors de la génération du lien de confirmation');
     }
   }
+
+  async sendAdminAccountCreatedEmail(email: string, password: string): Promise<void> {
+    try {
+      const subject = 'Votre compte admin a été créé';
+      const message = `
+        <p>Bonjour,</p>
+        <p>Un compte administrateur a été créé pour vous sur notre plateforme.</p>
+        <p>Voici vos identifiants de connexion :</p>
+        <ul>
+          <li><strong>Email :</strong> ${email}</li>
+          <li><strong>Mot de passe :</strong> ${password}</li>
+        </ul>
+        <p>Nous vous recommandons de changer ce mot de passe dès votre première connexion.</p>
+        <p>Bonne utilisation,</p>
+        <p>L'équipe sécurité</p>
+      `;
+  
+      await this.sendEmailService.sendEmail(email, subject, message);
+    } catch (error) {
+      throw new BadRequestException("Erreur lors de l'envoi de l'email d'information admin");
+    }
+  }
+  
 }

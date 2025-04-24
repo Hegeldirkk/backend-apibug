@@ -2,7 +2,7 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
-  Body,
+  Request,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatutCompte, User, UserRole } from '../user/user.entity';
@@ -16,8 +16,11 @@ import { Company } from 'src/company/company.entity';
 import { ConfirmationTokenService } from 'src/common/confirmation-token.service';
 import { ConfigService } from '@nestjs/config';
 import { ChangePasswordDto } from './dto/update-password.dto';
-import { access, stat } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
+import { LoginAdminDto } from './dto/login-admin.dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
+import { Admin } from 'src/admin/admin.entity';
 
 @Injectable()
 export class AuthService {
@@ -33,10 +36,36 @@ export class AuthService {
     @InjectRepository(Hacker)
     private readonly hackerRepo: Repository<Hacker>,
 
+    @InjectRepository(Admin)
+    private readonly adminRepo: Repository<Admin>,
+
     private readonly confirmationTokenService: ConfirmationTokenService, // Injection du service de génération de lien
 
     private readonly responseTransformer: ResponseTransformerService,
   ) {}
+
+  private generateStrongPassword(length = 8): string {
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+    const special = '!@#$%^&*()_+[]{}<>?';
+    const all = upper + lower + digits + special;
+
+    let password = [
+      upper[Math.floor(Math.random() * upper.length)],
+      lower[Math.floor(Math.random() * lower.length)],
+      digits[Math.floor(Math.random() * digits.length)],
+      special[Math.floor(Math.random() * special.length)],
+    ];
+
+    while (password.length < length) {
+      password.push(all[Math.floor(Math.random() * all.length)]);
+    }
+
+    return password
+      .sort(() => Math.random() - 0.5) // Mélange
+      .join('');
+  }
 
   // 📩 méthode privée : envoi de lien de confirmation
   private async sendConfirmationEmail(user: User) {
@@ -50,6 +79,23 @@ export class AuthService {
       );
     return response;
   }
+
+  async generateUniquePseudo(prenom: string, nom: string): Promise<string> {
+    const adjectives = ['dark', 'silent', 'crazy', 'fast', 'shadow', 'cyber'];
+    const nouns = ['wolf', 'ninja', 'tiger', 'ghost', 'falcon', 'sniper'];
+  
+    const base = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}`;
+    let pseudo = base;
+    let suffix = Math.floor(Math.random() * 1000);
+  
+    while (await this.hackerRepo.findOne({ where: { pseudo } })) {
+      suffix = Math.floor(Math.random() * 10000);
+      pseudo = `${base}${suffix}`;
+    }
+  
+    return pseudo;
+  }
+  
 
   //creer un utilisateur de type entreprise
   async registerCompany(dto: RegisterDto) {
@@ -104,6 +150,12 @@ export class AuthService {
     const user = await this.createUserBase(dto, UserRole.HACKER);
 
     const hacker = this.hackerRepo.create({ user });
+
+    const newPseudo = await this.generateUniquePseudo(
+      hacker.prenom,
+      hacker.nom,
+    );
+    hacker.pseudo = newPseudo; // Générer un pseudo basé sur l'email
     console.log('HACKER OBJ:', hacker); // 👀 Tu dois voir un objet ici
     await this.hackerRepo.save(hacker);
 
@@ -114,6 +166,54 @@ export class AuthService {
     return {
       success: true,
       message: 'Hacker créé, un mail a été envoyé',
+      data: this.responseTransformer.transform(user),
+    };
+  }
+
+  //creer un utilisateur de type admin
+  async registerAdmin(@Request() req, dto: RegisterAdminDto, role: UserRole) {
+    const existing = await this.userRepo.findOne({
+      where: { email: dto.email },
+    });
+
+    if (existing) {
+      throw new BadRequestException({
+        success: false,
+        message: 'cet admin existe déjà',
+      });
+    }
+    const generatedPassword = this.generateStrongPassword();
+
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    console.log('GENERATED PASSWORD:', generatedPassword); // 👀 Tu dois voir un objet ici
+    const user = this.userRepo.create({
+      email: dto.email,
+
+      password: hashedPassword,
+      role,
+      verified: true,
+    });
+
+    const admin = this.adminRepo.create({
+      user,
+      nom: dto.nom,
+      contact: dto.contact,
+      prenom: dto.prenom,
+    });
+
+    await this.userRepo.save(user); // Enregistrer l'utilisateur avec la référence à l'admin
+    admin.user = user; // Associer l'admin à l'utilisateur
+    await this.adminRepo.save(admin);
+
+    await this.confirmationTokenService.sendAdminAccountCreatedEmail(
+      dto.email,
+      generatedPassword,
+    );
+
+    return {
+      success: true,
+      message: 'Admin créé, un mail a été envoyé',
       data: this.responseTransformer.transform(user),
     };
   }
@@ -151,6 +251,41 @@ export class AuthService {
       where: { email: dto.email, role: dto.role },
       relations: [dto.role], // Assurez-vous que la relation est correctement définie dans l'entité User
     });
+    console.log('USER:', user); // 👀 Tu dois voir un objet ici
+    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
+      throw new UnauthorizedException({
+        success: false,
+        message: 'Identifiants invalides',
+      });
+    }
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      ait: 2,
+    };
+
+    const token = this.jwtService.sign(payload);
+
+    return {
+      success: true,
+      message: 'utilisateur connecté',
+      access_token: token,
+      data: this.responseTransformer.transform(user),
+    };
+  }
+
+  // 🔑 méthode de connexion admin
+  async loginAdmin(dto: LoginAdminDto) {
+    const user = await this.userRepo.findOne({
+      where: [
+        { email: dto.email, role: UserRole.ADMIN },
+        { email: dto.email, role: UserRole.SUPERADMIN },
+      ],
+      relations: ['admin'],
+    });
+
     console.log('USER:', user); // 👀 Tu dois voir un objet ici
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
       throw new UnauthorizedException({
