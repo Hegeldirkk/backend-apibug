@@ -29,6 +29,9 @@ export declare class AuthController {
         success: boolean;
         message: string;
         data: Record<string, any>;
+    } | {
+        success: boolean;
+        message: string;
     }>;
     login(dto: LoginDto): Promise<{
         success: boolean;

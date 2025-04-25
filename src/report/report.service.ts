@@ -52,10 +52,19 @@ export class ReportService {
   }
 
   // Récupérer les rapports par entreprise (company)
-  async findByCompany(companyId: string) {
-    return this.reportRepo.find({
-      where: { program: { company: { id: companyId } } },
-    });
+  async findByCompany(userId: string) {
+    return {
+      success: true,
+      message:
+        'Liste des rapports avec programmes et hackers récupérée avec succès',
+      data: await this.reportRepo.find({
+        relations: ['program', 'hacker'],
+        where: {
+          program: { company: { user: { id: userId } } },
+        },
+        order: { createdAt: 'DESC' },
+      }),
+    };
   }
 
   // Récupérer les rapports par hacker
@@ -73,7 +82,7 @@ export class ReportService {
       where: { id: hackerId },
       relations: ['hacker'],
     });
-    
+
     if (!hacker) throw new NotFoundException('Hacker non trouvé');
 
     const program = await this.programRepo.findOne({
@@ -137,17 +146,15 @@ export class ReportService {
     };
   }
 
-  async updateStatus(
-    dto: UpdateReportStatusDto,
-    companyId: string,
-  ): Promise<any> {
+  async updateStatus(dto: UpdateReportStatusDto, userId: string): Promise<any> {
     const report = await this.reportRepo.findOne({
       where: { id: dto.reportId },
-      relations: ['program'],
+      relations: ['program', 'program.company', 'program.company.user'], // ✅ ceci fonctionne
     });
+
     if (!report) throw new NotFoundException('Rapport non trouvé');
 
-    if (report.program.company.id !== companyId) {
+    if (report.program.company.user.id !== userId) {
       throw new NotFoundException('Programme non trouvé pour cette entreprise');
     }
 
@@ -158,5 +165,20 @@ export class ReportService {
       message: 'Statut du rapport mis à jour avec succès',
       data: updatedReport,
     };
+  }
+
+  async getAllReportsWithMessages() {
+    return this.reportRepo.find({
+      relations: [
+        'program',
+        'hacker',
+        'messages',
+        'messages.hacker',
+        'messages.company',
+      ],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

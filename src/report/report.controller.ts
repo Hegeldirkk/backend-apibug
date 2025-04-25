@@ -17,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateReportStatusDto } from './dto/update-report-status.dto';
+import { UserRole } from 'src/user/user.entity';
 
 @Controller('reports')
 export class ReportController {
@@ -35,8 +36,8 @@ export class ReportController {
   @Get('by-company')
   @UseGuards(JwtAuthGuard)
   async getReportsByCompany(@Request() req) {
-    const companyId = req.user.id; // on récupère l'id de l'entreprise de l'utilisateur connecté
-    return this.reportService.findByCompany(companyId);
+    const userId = req.user.id; // on récupère l'id de l'entreprise de l'utilisateur connecté
+    return this.reportService.findByCompany(userId);
   }
 
   @Get('by-hacker')
@@ -66,7 +67,21 @@ export class ReportController {
   @UseGuards(JwtAuthGuard)
   @Put('status')
   async status(@Body() dto: UpdateReportStatusDto, @Request() req) {
-    const companyId = req.user.id; // ou `req.user.id` selon ton JWT
-    return this.reportService.updateStatus(dto, companyId);
+    const userId = req.user.id; // ou `req.user.id` selon ton JWT
+    return this.reportService.updateStatus(dto, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('with-messages')
+  async getReportsWithMessages(@Request() req) {
+    const role = req.user.role;
+    const ait = req.user.ait;
+    if (role !== UserRole.ADMIN && role !== UserRole.SUPERADMIN && ait !== 2) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
+    return this.reportService.getAllReportsWithMessages();
   }
 }

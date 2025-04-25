@@ -28,6 +28,14 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('register/admin')
   async registerAdmin(@Request() req, @Body() dto: RegisterAdminDto) {
+    const userole = req.user.role;
+    const ait = req.user.ait;
+    if (userole !== 'superadmin' && ait !== 2) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
     const role = UserRole.ADMIN
     return this.authService.registerAdmin(req, dto, role);
   }
@@ -55,6 +63,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('update/psw')
   async changePassword(@Request() req, @Body() dto: ChangePasswordDto) {
+    const ait = req.user.ait;
+    if (ait !== 2) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
     const userId = req.user.id;
     return this.authService.changePassword(userId, dto);
   }

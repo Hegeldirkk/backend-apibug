@@ -64,6 +64,7 @@ export class ProgramService {
   
     const company = await this.companyRepo.findOne({
       where: { user: { id: user.id } },
+      relations: ['reports'],
     });
   
     if (!company) {

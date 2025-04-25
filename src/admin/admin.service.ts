@@ -246,4 +246,104 @@ export class AdminService {
       },
     };
   }
+
+  async getCompaniesDetails(): Promise<any[]> {
+    const companies = await this.companyRepo
+      .createQueryBuilder('company')
+      .leftJoinAndSelect('company.user', 'user')
+      .leftJoinAndSelect('company.programs', 'program')
+      .leftJoinAndSelect('program.reports', 'report')
+      .leftJoinAndSelect('report.hacker', 'hacker')
+      .getMany();
+
+    return companies.map((company) => {
+      const totalPrograms = company.programs.length;
+      const activePrograms = company.programs.filter(
+        (p) => p.statut === 'actif',
+      ).length;
+
+      const hackerSet = new Set<string>();
+      let totalRecompense = 0;
+
+      company.programs.forEach((program) => {
+        // Récompense estimée basée sur le prix_critique du programme
+        if (program.prix_critique) {
+          const value = parseFloat(program.prix_critique);
+          if (!isNaN(value)) {
+            totalRecompense += value;
+          }
+        }
+
+        // Ajout des hackers qui ont soumis un rapport
+        program.reports?.forEach((report) => {
+          if (report.hacker?.id) {
+            hackerSet.add(report.hacker.id);
+          }
+        });
+      });
+
+      return {
+        company: companies,
+        totalPrograms,
+        activePrograms,
+        totalHackers: hackerSet.size,
+        totalRecompense,
+      };
+    });
+  }
+
+  async getHackersSuccessRate(): Promise<any[]> {
+    const hackers = await this.hackerRepo
+      .createQueryBuilder('hacker')
+      .leftJoinAndSelect('hacker.reports', 'report')
+      .leftJoinAndSelect('hacker.user', 'user')
+      .getMany();
+
+    return hackers.map((hacker) => {
+      const totalReports = hacker.reports.length;
+      const validatedReports = hacker.reports.filter(
+        (r) => r.statut === 'validé',
+      ).length;
+      const successRate =
+        totalReports > 0 ? (validatedReports / totalReports) * 100 : 0;
+
+      return {
+        hackers,
+        totalReports,
+        successRate: parseFloat(successRate.toFixed(2)),
+        points: hacker.points,
+      };
+    });
+  }
+
+  async getHackersRanking(): Promise<any[]> {
+    const hackers = await this.hackerRepo
+      .createQueryBuilder('hacker')
+      .leftJoinAndSelect('hacker.user', 'user')
+      .orderBy('hacker.points', 'DESC')
+      .getMany();
+
+    return hackers.map((hacker, index) => ({
+      rank: index + 1,
+      hacker
+    }));
+  }
+
+  async getProgramsWithHackerParticipation() {
+    const programs = await this.programRepo
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.company', 'company')
+      .leftJoinAndSelect('program.reports', 'report')
+      .leftJoin('report.hacker', 'hacker')
+      .loadRelationCountAndMap('program.hackerCount', 'program.reports', 'report', (qb) =>
+        qb.select('COUNT(DISTINCT report.hackerId)')
+      )
+      .getMany();
+  
+    return programs.map((program) => ({
+      program,
+      nbHackers: new Set(program.reports.map((r) => r.hacker?.id)).size, // Hackers uniques
+    }));
+  }
+  
 }

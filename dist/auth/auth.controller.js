@@ -34,6 +34,14 @@ let AuthController = class AuthController {
         return this.authService.registerCompany(dto);
     }
     async registerAdmin(req, dto) {
+        const userole = req.user.role;
+        const ait = req.user.ait;
+        if (userole !== 'superadmin' && ait !== 2) {
+            return {
+                success: false,
+                message: 'Access denied',
+            };
+        }
         const role = user_entity_1.UserRole.ADMIN;
         return this.authService.registerAdmin(req, dto, role);
     }
@@ -53,6 +61,13 @@ let AuthController = class AuthController {
         }
     }
     async changePassword(req, dto) {
+        const ait = req.user.ait;
+        if (ait !== 2) {
+            return {
+                success: false,
+                message: 'Access denied',
+            };
+        }
         const userId = req.user.id;
         return this.authService.changePassword(userId, dto);
     }
