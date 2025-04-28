@@ -20,6 +20,7 @@ const report_module_1 = require("./report/report.module");
 const hacker_module_1 = require("./hacker/hacker.module");
 const init_module_1 = require("./init/init.module");
 const admin_module_1 = require("./admin/admin.module");
+const report_message_module_1 = require("./report-message/report-message.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,7 +46,8 @@ exports.AppModule = AppModule = __decorate([
             report_module_1.ReportModule,
             hacker_module_1.HackerModule,
             init_module_1.InitModule,
-            admin_module_1.AdminModule
+            admin_module_1.AdminModule,
+            report_message_module_1.ReportMessageModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

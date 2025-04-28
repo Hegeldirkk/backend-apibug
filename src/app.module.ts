@@ -13,6 +13,7 @@ import { ReportModule } from './report/report.module';
 import { HackerModule } from './hacker/hacker.module';
 import { InitModule } from './init/init.module';
 import { AdminModule } from './admin/admin.module';
+import { ReportMessageModule } from './report-message/report-message.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { AdminModule } from './admin/admin.module';
     ReportModule,
     HackerModule,
     InitModule,
-    AdminModule
+    AdminModule,
+    ReportMessageModule
   ],
   controllers: [AppController],
   providers: [AppService],

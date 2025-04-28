@@ -23,16 +23,15 @@ export class ReportMessageController {
   constructor(private readonly service: ReportMessageService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post(':reportId')
+  @Post()
   @UseInterceptors(FileFieldsInterceptor([{ name: 'files', maxCount: 5 }]))
   async sendMessage(
-    @Param('reportId') reportId: string,
     @Request() req,
     @UploadedFiles() files: { files?: Express.Multer.File[] },
     @Body() dto: CreateReportMessageDto,
   ) {
     const role = req.user.role;
-    return this.service.createMessage({ ...dto, reportId }, files, {
+    return this.service.createMessage(req, { ...dto }, files, {
       senderType: role,
       senderId: req.user.id,
     });
@@ -45,8 +44,8 @@ export class ReportMessageController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('messages/:reportId')
-  async getMessages(@Param('reportId') reportId: string) {
-    return this.service.getMessagesForReport(reportId);
+  @Get()
+  async getMessages(@Request() req, @Body() reportId: string) {
+    return this.service.getMessagesForReport(req, reportId);
   }
 }
