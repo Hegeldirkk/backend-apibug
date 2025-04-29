@@ -7,11 +7,11 @@ import * as path from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // app.enableCors({
-  //   origin: 'http://192.168.1.8:5173',
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   preflightContinue: false,
-  // });
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+  });
 
   // Configurer le dossier `uploads` comme un dossier public accessible
   app.useStaticAssets(path.join(__dirname, '..', 'uploads'), {

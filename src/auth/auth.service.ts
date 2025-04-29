@@ -83,19 +83,18 @@ export class AuthService {
   async generateUniquePseudo(prenom: string, nom: string): Promise<string> {
     const adjectives = ['dark', 'silent', 'crazy', 'fast', 'shadow', 'cyber'];
     const nouns = ['wolf', 'ninja', 'tiger', 'ghost', 'falcon', 'sniper'];
-  
+
     const base = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}`;
     let pseudo = base;
     let suffix = Math.floor(Math.random() * 1000);
-  
+
     while (await this.hackerRepo.findOne({ where: { pseudo } })) {
       suffix = Math.floor(Math.random() * 10000);
       pseudo = `${base}${suffix}`;
     }
-  
+
     return pseudo;
   }
-  
 
   //creer un utilisateur de type entreprise
   async registerCompany(dto: RegisterDto) {
@@ -266,7 +265,9 @@ export class AuthService {
       ait: 2,
     };
 
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, {
+      expiresIn: '1h', // ou '60m' ou 3600 (en secondes)
+    });
 
     return {
       success: true,

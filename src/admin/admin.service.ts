@@ -8,6 +8,7 @@ import { Hacker } from 'src/hacker/hacker.entity';
 import { Company } from 'src/company/company.entity';
 import { Program, ProgramStatus } from 'src/programs/program.entity';
 import * as dayjs from 'dayjs';
+import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +27,8 @@ export class AdminService {
 
     @InjectRepository(Program)
     private programRepo: Repository<Program>,
+
+    private readonly responseTransformer: ResponseTransformerService,
   ) {}
 
   async getProfile(userId: string): Promise<Admin> {

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Hacker } from './hacker.entity';
 import { User } from 'src/user/user.entity';
+import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
 
 @Injectable()
 export class HackerService {
@@ -11,6 +12,8 @@ export class HackerService {
     private hackerRepo: Repository<Hacker>,
 
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+
+    private readonly responseTransformer: ResponseTransformerService,
   ) {}
 
   async getProfile(id: string): Promise<any> {
@@ -26,7 +29,7 @@ export class HackerService {
     return {
       success: true,
       message: 'Profil hacker récupéré avec succès',
-      data: hacker,
+      data: await this.responseTransformer.transform(hacker) ,
     };
   }
 
@@ -61,7 +64,7 @@ export class HackerService {
     return {
       success: true,
       message: 'Profil hacker mis à jour avec succès',
-      data: response,
+      data: await this.responseTransformer.transform(response),
     };
   }
 
@@ -71,7 +74,7 @@ export class HackerService {
     return {
       success: true,
       message: 'Liste des hackers récupérée avec succès',
-      data: response,
+      data: await this.responseTransformer.transform(response),
     }
   }
 
@@ -84,7 +87,7 @@ export class HackerService {
     return {
       success: true,
       message: 'Liste des hackers publics récupérée avec succès',
-      data: response,
+      data: await this.responseTransformer.transform(response),
     }
   }
 
@@ -97,7 +100,7 @@ export class HackerService {
     return {
       success: true,
       message: 'Liste des hackers privés récupérée avec succès',
-      data: response,
+      data: await this.responseTransformer.transform(response),
     }
   }
 
@@ -109,7 +112,7 @@ export class HackerService {
     return  {
       success: true,
       message: 'Classement des hackers récupéré avec succès',
-      data: response,
+      data: await this.responseTransformer.transform(response),
     }
   }
   

@@ -52,11 +52,9 @@ export class User {
   @Column({ nullable: true })
   otp_expire_at: Date;
 
-  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ default: false })
   verified: boolean;
 
-  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ default: false })
   docSet: boolean;
 
@@ -87,7 +85,6 @@ export class User {
   })
   statutCompte: StatutCompte;
 
-  @Exclude({ toPlainOnly: true }) // Par défaut on l'exclut de la réponse
   @Column({ nullable: true })
   twoFactorSecret?: string;
 

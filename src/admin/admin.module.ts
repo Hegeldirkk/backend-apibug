@@ -7,9 +7,10 @@ import { User } from 'src/user/user.entity';
 import { Hacker } from 'src/hacker/hacker.entity';
 import { Company } from 'src/company/company.entity';
 import { Program } from 'src/programs/program.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin, User, Hacker, Company, Program])],
+  imports: [TypeOrmModule.forFeature([Admin, User, Hacker, Company, Program]), CommonModule],
   providers: [AdminService],
   controllers: [AdminController],
   exports: [AdminService],

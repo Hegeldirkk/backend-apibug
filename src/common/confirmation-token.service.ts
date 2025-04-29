@@ -34,7 +34,7 @@ export class ConfirmationTokenService {
       await this.userRepo.save(user);
 
       // Générer l'URL complète avec le token
-      const confirmationLink = `${this.configService.get<string>('FRONTEND_URL')}/confirm?token=${token}`;
+      const confirmationLink = `${this.configService.get<string>('FRONTEND_URL')}/verify-email/:?token=${token}`;
 
       // Envoyer un email à l'utilisateur avec le lien de confirmation
       const subject = 'Confirmez votre inscription';

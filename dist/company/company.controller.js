@@ -19,15 +19,32 @@ const update_company_dto_1 = require("./dto/update-company.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const update_company_profile_dto_1 = require("./dto/update-company-profile.dto");
+const user_entity_1 = require("../user/user.entity");
 let CompanyController = class CompanyController {
     companyService;
     constructor(companyService) {
         this.companyService = companyService;
     }
     async updateCompany(req, dto, files) {
+        const role = req.user.role;
+        const ait = req.user.ait;
+        if (role !== user_entity_1.UserRole.ENTREPRISE && ait !== 2) {
+            return {
+                success: false,
+                message: 'Access denied',
+            };
+        }
         return this.companyService.updateCompanyInfo(req, dto, files);
     }
     async getProfile(req) {
+        const role = req.user.role;
+        const ait = req.user.ait;
+        if (role !== user_entity_1.UserRole.ENTREPRISE && ait !== 2) {
+            return {
+                success: false,
+                message: 'Access denied',
+            };
+        }
         return this.companyService.getCompanyProfile(req.user);
     }
     async updateProfile(req, body) {

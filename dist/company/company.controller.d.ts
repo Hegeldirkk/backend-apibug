@@ -19,11 +19,17 @@ export declare class CompanyController {
         message: string;
         success?: undefined;
         data?: undefined;
+    } | {
+        success: boolean;
+        message: string;
     }>;
     getProfile(req: any): Promise<{
         success: boolean;
         message: string;
         data: Record<string, any>;
+    } | {
+        success: boolean;
+        message: string;
     }>;
     updateProfile(req: any, body: UpdateProfileDto): Promise<{
         success: boolean;

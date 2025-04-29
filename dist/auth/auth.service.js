@@ -203,7 +203,9 @@ let AuthService = class AuthService {
             role: user.role,
             ait: 2,
         };
-        const token = this.jwtService.sign(payload);
+        const token = this.jwtService.sign(payload, {
+            expiresIn: '1h',
+        });
         return {
             success: true,
             message: 'utilisateur connecté',

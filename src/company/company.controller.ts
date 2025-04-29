@@ -19,6 +19,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileDto } from './dto/update-company-profile.dto';
+import { UserRole } from 'src/user/user.entity';
 
 @Controller('companies')
 export class CompanyController {
@@ -46,12 +47,30 @@ export class CompanyController {
       logo?: Express.Multer.File[];
     },
   ) {
+    const role = req.user.role;
+    const ait = req.user.ait;
+
+    if (role !== UserRole.ENTREPRISE && ait!== 2) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
     return this.companyService.updateCompanyInfo(req, dto, files);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
+    const role = req.user.role;
+    const ait = req.user.ait;
+
+    if (role !== UserRole.ENTREPRISE && ait!== 2) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
     return this.companyService.getCompanyProfile(req.user);
   }
 

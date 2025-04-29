@@ -39,7 +39,7 @@ let ConfirmationTokenService = class ConfirmationTokenService {
                 throw new common_1.BadRequestException('Utilisateur non trouvé');
             }
             await this.userRepo.save(user);
-            const confirmationLink = `${this.configService.get('FRONTEND_URL')}/confirm?token=${token}`;
+            const confirmationLink = `${this.configService.get('FRONTEND_URL')}/verify-email/:?token=${token}`;
             const subject = 'Confirmez votre inscription';
             const message = `Cliquez sur le lien suivant pour valider votre inscription : <a href="${confirmationLink}">Confirmer mon inscription</a>`;
             await this.sendEmailService.sendEmail(email, subject, message);

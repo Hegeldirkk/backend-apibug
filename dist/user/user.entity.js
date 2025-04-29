@@ -86,12 +86,10 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "otp_expire_at", void 0);
 __decorate([
-    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "verified", void 0);
 __decorate([
-    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "docSet", void 0);
@@ -127,7 +125,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "statutCompte", void 0);
 __decorate([
-    (0, class_transformer_1.Exclude)({ toPlainOnly: true }),
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "twoFactorSecret", void 0);
