@@ -26,7 +26,7 @@ export declare class CompanyService {
     }>;
     updateCompanyInfo(req: any, dto: UpdateCompanyDto, files: {
         registre_commerce?: Express.Multer.File[];
-        logo?: Express.Multer.File[];
+        avatar?: Express.Multer.File[];
     }): Promise<{
         success: boolean;
         message: string;

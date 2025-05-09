@@ -71,6 +71,7 @@ export class ReportService {
   async findByHacker(hackerId: string) {
     return this.reportRepo.find({ where: { hacker: { id: hackerId } } });
   }
+  
   async create(
     dto: CreateReportDto,
     hackerId: string,

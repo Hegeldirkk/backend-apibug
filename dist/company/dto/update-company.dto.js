@@ -26,7 +26,7 @@ class UpdateCompanyDto {
     num_identification;
     registre_commerce;
     date_creation;
-    logo;
+    avatar;
 }
 exports.UpdateCompanyDto = UpdateCompanyDto;
 __decorate([
@@ -96,5 +96,5 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpdateCompanyDto.prototype, "logo", void 0);
+], UpdateCompanyDto.prototype, "avatar", void 0);
 //# sourceMappingURL=update-company.dto.js.map

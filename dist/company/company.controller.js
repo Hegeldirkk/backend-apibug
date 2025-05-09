@@ -60,7 +60,7 @@ __decorate([
     (0, common_1.Patch)('update'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
         { name: 'registre_commerce', maxCount: 1 },
-        { name: 'logo', maxCount: 1 },
+        { name: 'avatar', maxCount: 1 },
     ])),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),

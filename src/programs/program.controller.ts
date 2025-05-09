@@ -33,6 +33,12 @@ export class ProgramController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('all/hacker')
+  async getAllHackerEntreprise(@Request() req) {
+    return this.programService.getHackersForEntreprisePrograms(req);
+  }
+
+  //@UseGuards(JwtAuthGuard)
   @Get('all')
   async getAllPrograms(@Request() req) {
     return this.programService.getAllPrograms(req);

@@ -44,8 +44,8 @@ export class ReportMessageController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async getMessages(@Request() req, @Body() reportId: string) {
-    return this.service.getMessagesForReport(req, reportId);
+  @Get('report/:reportId')
+  async getMessages(@Param('reportId') reportId: string) {
+    return this.service.getMessagesForReport(reportId);
   }
 }

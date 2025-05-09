@@ -191,10 +191,16 @@ let AuthService = class AuthService {
             relations: [dto.role],
         });
         console.log('USER:', user);
-        if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-            throw new common_1.UnauthorizedException({
+        if (!user) {
+            throw new common_1.BadRequestException({
                 success: false,
                 message: 'Identifiants invalides',
+            });
+        }
+        if (!user || !(await bcrypt.compare(dto.password, user.password))) {
+            throw new common_1.BadRequestException({
+                success: false,
+                message: 'Mot de passe incorrect',
             });
         }
         const payload = {

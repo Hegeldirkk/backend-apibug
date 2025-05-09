@@ -7,9 +7,10 @@ import { Company } from '../company/company.entity';
 import { UploadModule } from 'src/common/upload/upload.module';
 import { CommonModule } from 'src/common/common.module';
 import { User } from 'src/user/user.entity';
+import { Report } from 'src/report/report.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Program, Company, User]), UploadModule, CommonModule],
+  imports: [TypeOrmModule.forFeature([Program, Company, User, Report]), UploadModule, CommonModule],
   providers: [ProgramService],
   controllers: [ProgramController],
   exports: [TypeOrmModule],

@@ -119,7 +119,7 @@ export class ReportMessageService {
     return this.repo.save(message);
   }
 
-  async getMessagesForReport(@Request() req, reportId: string) {
+  async getMessagesForReport(reportId: string) {
     console.log('Fetching messages for report:', reportId);
 
     const messages = await this.repo.find({

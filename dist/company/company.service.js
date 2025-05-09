@@ -127,7 +127,7 @@ let CompanyService = class CompanyService {
             console.log('🏢 Entreprise trouvée :', company);
             console.log('📂 Fichiers reçus :', {
                 registre_commerce: files.registre_commerce?.[0]?.originalname,
-                logo: files.logo?.[0]?.originalname,
+                avatar: files.avatar?.[0]?.originalname,
             });
             console.log('💾 Début de sauvegarde des fichiers');
             const targetDir = path.join('uploads', `company_${company.id}`);
@@ -135,13 +135,10 @@ let CompanyService = class CompanyService {
             console.log('✅ Fichiers sauvegardés :', savedFiles);
             if (!savedFiles.registre_commerce)
                 throw new common_1.BadRequestException('document registre de commerce requis');
-            if (!savedFiles.logo)
+            if (!savedFiles.avatar)
                 throw new common_1.BadRequestException('logo requis');
             if (savedFiles.registre_commerce) {
                 company.registre_commerce = savedFiles.registre_commerce;
-            }
-            if (savedFiles.logo) {
-                company.user.avatar = savedFiles.logo;
             }
             if (dto.nom)
                 company.nom = dto.nom;
@@ -169,7 +166,16 @@ let CompanyService = class CompanyService {
                 company.num_identification = dto.num_identification;
             if (dto.date_creation)
                 company.date_creation = dto.date_creation;
-            company.user.docSet = true;
+            const user = await this.userRepo.findOne({
+                where: { id: userId },
+            });
+            if (!user)
+                throw new common_1.NotFoundException('Utilisateur introuvable');
+            user.docSet = true;
+            if (savedFiles.avatar) {
+                user.avatar = savedFiles.avatar;
+            }
+            await this.userRepo.save(user);
             const updated = await this.companyRepo.save(company);
             return {
                 success: true,

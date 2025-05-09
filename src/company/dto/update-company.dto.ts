@@ -54,6 +54,6 @@ export class UpdateCompanyDto {
     date_creation?: Date; //
 
     @IsOptional()
-    logo?: string; //
+    avatar?: string; //
 
 }

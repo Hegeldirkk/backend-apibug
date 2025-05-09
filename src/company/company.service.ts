@@ -112,7 +112,7 @@ export class CompanyService {
     dto: UpdateCompanyDto,
     files: {
       registre_commerce?: Express.Multer.File[];
-      logo?: Express.Multer.File[];
+      avatar?: Express.Multer.File[];
     },
   ) {
     try {
@@ -132,7 +132,7 @@ export class CompanyService {
       console.log('🏢 Entreprise trouvée :', company);
       console.log('📂 Fichiers reçus :', {
         registre_commerce: files.registre_commerce?.[0]?.originalname,
-        logo: files.logo?.[0]?.originalname,
+        avatar: files.avatar?.[0]?.originalname,
       });
 
       // Sauvegarde des fichiers
@@ -148,16 +148,14 @@ export class CompanyService {
       if (!savedFiles.registre_commerce)
         throw new BadRequestException('document registre de commerce requis');
 
-      if (!savedFiles.logo) throw new BadRequestException('logo requis');
+      if (!savedFiles.avatar) throw new BadRequestException('logo requis');
 
       // Mise à jour des fichiers si présents
       if (savedFiles.registre_commerce) {
         company.registre_commerce = savedFiles.registre_commerce;
       }
 
-      if (savedFiles.logo) {
-        company.user.avatar = savedFiles.logo;
-      }
+      
 
       // Mise à jour manuelle sécurisée
       if (dto.nom) company.nom = dto.nom;
@@ -177,8 +175,19 @@ export class CompanyService {
       if (dto.num_identification)
         company.num_identification = dto.num_identification;
       if (dto.date_creation) company.date_creation = dto.date_creation;
-      company.user.docSet = true; // Mettre à jour le statut du document de l'utilisateur
 
+      const user = await this.userRepo.findOne({
+        where: { id: userId },
+      });
+
+      if (!user) throw new NotFoundException('Utilisateur introuvable');
+
+      user.docSet = true; // Mettre à jour le statut du document de l'utilisateur
+      if (savedFiles.avatar) {
+        user.avatar = savedFiles.avatar;
+      }
+
+      await this.userRepo.save(user); // Sauvegarder l'utilisateur avec le nouveau statut
       const updated = await this.companyRepo.save(company);
 
       return {

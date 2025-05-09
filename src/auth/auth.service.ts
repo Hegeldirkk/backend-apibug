@@ -251,10 +251,18 @@ export class AuthService {
       relations: [dto.role], // Assurez-vous que la relation est correctement définie dans l'entité User
     });
     console.log('USER:', user); // 👀 Tu dois voir un objet ici
-    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-      throw new UnauthorizedException({
+
+    if (!user ) {
+      throw new BadRequestException({
         success: false,
         message: 'Identifiants invalides',
+      });
+    }
+
+    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
+      throw new BadRequestException({
+        success: false,
+        message: 'Mot de passe incorrect',
       });
     }
 

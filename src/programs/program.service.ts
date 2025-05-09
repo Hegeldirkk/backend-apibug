@@ -9,6 +9,9 @@ import { UploadService } from 'src/common/upload/upload.service';
 import { UpdateProgramStatutDto } from './dto/update-statut-program.dto';
 import { ResponseTransformerService } from 'src/common/services/response-transformer.service';
 import { User } from 'src/user/user.entity';
+import { DataSource } from 'typeorm';
+import { Hacker } from 'src/hacker/hacker.entity';
+import { Report } from 'src/report/report.entity';
 
 @Injectable()
 export class ProgramService {
@@ -22,10 +25,17 @@ export class ProgramService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
 
+    @InjectRepository(Report)
+    private reportRepo: Repository<Report>,
+
     private readonly uploadService: UploadService,
 
     private readonly responseTransformer: ResponseTransformerService,
+    private readonly dataSource: DataSource
+
   ) {}
+
+  
 
   // Pour récupérer les programmes d'un hacker
   async getProgramsWithReportsAndHackers(req: any) {
@@ -57,6 +67,46 @@ export class ProgramService {
       data: programs,
     };
   }
+  async getHackersForEntreprisePrograms(req: any) {
+    const user = await this.userRepo.findOne({
+      where: { id: req.user.id },
+      relations: ['company'],
+    });
+
+    console.log(user, 'user');
+  
+    if (!user?.company?.id) {
+      throw new NotFoundException("Entreprise non trouvée pour cet utilisateur");
+    }
+  
+    const reports = await this.reportRepo
+      .createQueryBuilder('report')
+      .leftJoinAndSelect('report.hacker', 'hacker')
+      .leftJoinAndSelect('hacker.user', 'user')
+      .leftJoin('report.program', 'program')
+      .leftJoin('program.company', 'company')
+      .where('company.id = :companyId', { companyId: user.company.id })
+      .getMany();
+  
+    // Supprimer les doublons de hackers
+    const uniqueHackersMap = new Map<string, Hacker>();
+    for (const report of reports) {
+      if (report['hacker']) {
+        uniqueHackersMap.set(report['hacker'].id, report['hacker']);
+      }
+    }
+  
+    const uniqueHackers = Array.from(uniqueHackersMap.values());
+  
+    return {
+      success: true,
+      message: 'Liste des hackers ayant participé à un programme récupérée avec succès',
+      data: uniqueHackers,
+    };
+  }
+  
+  
+  
   
   // Pour récupérer les programmes d'une entreprise
   async getProgramsByCompany(req: any) {
@@ -64,7 +114,6 @@ export class ProgramService {
   
     const company = await this.companyRepo.findOne({
       where: { user: { id: user.id } },
-      relations: ['reports'],
     });
   
     if (!company) {
@@ -88,7 +137,7 @@ export class ProgramService {
   
 
   // Pour récupérer tous les programmes
-  async getAllPrograms(req: any) {
+  async getAllProgramss(req: any) {
     // Tu peux ici ajouter un contrôle selon le rôle si nécessaire
     const programes = await this.programRepo.find({
       relations: ['company', 'company.user'],
@@ -100,7 +149,67 @@ export class ProgramService {
       message: 'Tous les programmes récupérés avec succès',
       data: programes,
     };
+    
   }
+
+  async getAllPrograms(req: any) {
+    type ProgramStat = {
+      programId: string;
+      totalRapports: number;
+      totalHackers: number;
+      totalVulnerabilites: number;
+    };
+  
+    const programs = await this.programRepo.find({
+      relations: ['company', 'company.user', 'reports', 'reports.hacker', 'reports.hacker.user'],
+      order: { createdAt: 'DESC' },
+    });
+  
+    const stats: ProgramStat[] = await this.dataSource.query(`
+      SELECT 
+        p.id AS programId,
+        COUNT(r.id) AS totalRapports,
+        COUNT(DISTINCT r.hackerId) AS totalHackers,
+        COALESCE(SUM(JSON_LENGTH(r.vulnerability)), 0) AS totalVulnerabilites
+      FROM programs p
+      LEFT JOIN reports r ON r.programId = p.id
+      GROUP BY p.id
+    `);
+  
+    const statsMap = new Map<string, ProgramStat>(
+      stats.map(stat => [stat.programId, {
+        programId: stat.programId,
+        totalRapports: Number(stat.totalRapports),
+        totalHackers: Number(stat.totalHackers),
+        totalVulnerabilites: Number(stat.totalVulnerabilites),
+      }])
+    );
+  
+    const enrichedPrograms = programs.map(program => {
+      const stat = statsMap.get(program.id) || {
+        totalRapports: 0,
+        totalHackers: 0,
+        totalVulnerabilites: 0,
+      };
+  
+      return {
+        ...program,
+        totalRapports: stat.totalRapports,
+        totalHackersUniques: stat.totalHackers,
+        totalVulnerabilites: stat.totalVulnerabilites,
+      };
+    });
+  
+    return {
+      success: true,
+      message: 'Tous les programmes récupérés avec succès',
+      data: enrichedPrograms,
+    };
+  }
+  
+  
+  
+  
 
   async createProgram(req, dto: CreateProgramDto) {
     const user = req.user;

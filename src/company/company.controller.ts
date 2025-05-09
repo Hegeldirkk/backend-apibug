@@ -35,7 +35,7 @@ export class CompanyController {
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'registre_commerce', maxCount: 1 },
-      { name: 'logo', maxCount: 1 },
+      { name: 'avatar', maxCount: 1 },
     ]),
   )
   async updateCompany(
@@ -44,7 +44,7 @@ export class CompanyController {
     @UploadedFiles()
     files: {
       registre_commerce?: Express.Multer.File[];
-      logo?: Express.Multer.File[];
+      avatar?: Express.Multer.File[];
     },
   ) {
     const role = req.user.role;

@@ -13,5 +13,5 @@ export declare class UpdateCompanyDto {
     num_identification?: string;
     registre_commerce?: string;
     date_creation?: Date;
-    logo?: string;
+    avatar?: string;
 }
