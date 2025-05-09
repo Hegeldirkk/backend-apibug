@@ -1,0 +1,19 @@
+{
+    "schemaVersion":2,
+    "dockerfileLines": [
+      "FROM node:18-alpine AS builder",
+      "WORKDIR /app",
+      "COPY package*.json ./",
+      "RUN npm install --only=production && npm cache clean --force",
+      "COPY dist ./dist",
+      "FROM node:18-alpine AS runner",
+      "WORKDIR /app",
+      "COPY --from=builder /app/node_modules ./node_modules",
+      "COPY --from=builder /app/dist ./dist",
+      "COPY package.json ./",
+      "ENV NODE_ENV production",
+      "ENV PORT 80",
+      "EXPOSE 80",
+      "CMD [ \"node\", \"dist/main.js\" ]"
+    ]
+}
